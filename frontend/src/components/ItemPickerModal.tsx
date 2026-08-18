@@ -58,19 +58,24 @@ export default function ItemPickerModal({
         </div>
 
         <div className="p-4 flex gap-3 border-b border-border-dark bg-bg-base">
-          <select
-            value={poolFilter}
-            disabled={lockPool}
-            onChange={(e) => setPoolFilter(e.target.value)}
-            className="bg-bg-card border border-border-dark text-sm rounded px-3 py-2 focus:outline-none focus:border-accent disabled:opacity-60"
-          >
-            <option value="">All Pools</option>
-            {pools.map((p) => (
-              <option key={p.key} value={p.key}>
-                {p.display_name}
-              </option>
-            ))}
-          </select>
+          {lockPool ? (
+            <span className="bg-bg-card border border-border-dark text-sm text-text-sub rounded px-3 py-2">
+              {pools.find((p) => p.key === poolFilter)?.display_name ?? poolFilter}
+            </span>
+          ) : (
+            <select
+              value={poolFilter}
+              onChange={(e) => setPoolFilter(e.target.value)}
+              className="bg-bg-card border border-border-dark text-sm rounded px-3 py-2 focus:outline-none focus:border-accent"
+            >
+              <option value="">All Pools</option>
+              {pools.map((p) => (
+                <option key={p.key} value={p.key}>
+                  {p.display_name}
+                </option>
+              ))}
+            </select>
+          )}
           <div className="relative flex-1">
             <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-sub" width={14} height={14} />
             <input

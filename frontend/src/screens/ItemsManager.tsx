@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api/client'
-import type { Item, ItemType, Pool } from '../types'
+import type { Group, Item, ItemType, Pool } from '../types'
 import { useDebounced } from '../hooks/useDebounced'
 import ItemEditPanel from '../components/ItemEditPanel'
 import ComposeFinishedDialog from '../components/ComposeFinishedDialog'
@@ -10,10 +10,13 @@ export default function ItemsManager() {
   const [pools, setPools] = useState<Pool[]>([])
   const [poolFilter, setPoolFilter] = useState('')
   const [typeFilter, setTypeFilter] = useState<ItemType | ''>('')
+  const [groups, setGroups] = useState<Group[]>([])
+  const [groupFilter, setGroupFilter] = useState<number | ''>('')
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounced(search)
   const [items, setItems] = useState<Item[]>([])
   const [selectedIds, setSelectedIds] = useState<number[]>([])
+  const [sortAsc, setSortAsc] = useState(true)
 
   const [editingId, setEditingId] = useState<number | null | undefined>(undefined) // undefined = closed
   const [composeOpen, setComposeOpen] = useState(false)
@@ -22,13 +25,27 @@ export default function ItemsManager() {
     api.listPools().then(setPools)
   }, [])
 
+  useEffect(() => {
+    setGroupFilter('')
+    if (!poolFilter) {
+      setGroups([])
+      return
+    }
+    api.listGroups({ pool: poolFilter }).then(setGroups)
+  }, [poolFilter])
+
   function refresh() {
     api
-      .listItems({ pool: poolFilter || undefined, type: (typeFilter as ItemType) || undefined, search: debouncedSearch || undefined })
+      .listItems({
+        pool: poolFilter || undefined,
+        type: (typeFilter as ItemType) || undefined,
+        group_id: groupFilter || undefined,
+        search: debouncedSearch || undefined,
+      })
       .then(setItems)
   }
 
-  useEffect(refresh, [poolFilter, typeFilter, debouncedSearch])
+  useEffect(refresh, [poolFilter, typeFilter, groupFilter, debouncedSearch])
 
   function toggleSelect(id: number) {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
@@ -39,6 +56,8 @@ export default function ItemsManager() {
   }
 
   const selectedParts = items.filter((it) => selectedIds.includes(it.id) && it.type === 'part')
+
+  const sortedItems = [...items].sort((a, b) => (sortAsc ? 1 : -1) * a.name.localeCompare(b.name, 'ja'))
 
   function poolLabel(key: string) {
     return pools.find((p) => p.key === key)?.display_name ?? key
@@ -98,13 +117,29 @@ export default function ItemsManager() {
             <option value="finished">Finished</option>
             <option value="part">Part</option>
           </select>
+          {poolFilter && (
+            <select
+              value={groupFilter}
+              onChange={(e) => setGroupFilter(e.target.value ? Number(e.target.value) : '')}
+              className="bg-bg-panel border border-border-dark rounded px-3 py-1.5 text-sm focus:outline-none focus:border-accent"
+            >
+              <option value="">All Groups</option>
+              {groups.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.name}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div className="bg-bg-panel rounded-lg border border-border-dark flex-1 overflow-hidden flex flex-col shadow-sm">
           <div className="grid grid-cols-12 gap-4 p-3 border-b border-border-dark bg-bg-card text-xs font-medium text-text-sub items-center shrink-0">
             <div className="col-span-3 flex items-center gap-2">
               <input type="checkbox" checked={items.length > 0 && selectedIds.length === items.length} onChange={toggleSelectAll} className="w-3.5 h-3.5 accent-accent rounded cursor-pointer" />
-              <span>Name</span>
+              <button onClick={() => setSortAsc((v) => !v)} className="flex items-center gap-1 hover:text-text-main transition-colors">
+                Name <span className="text-[10px]">{sortAsc ? '▲' : '▼'}</span>
+              </button>
             </div>
             <div className="col-span-2">Pool</div>
             <div className="col-span-2">Type</div>
@@ -112,13 +147,18 @@ export default function ItemsManager() {
             <div className="col-span-1 text-right">Edit</div>
           </div>
           <div className="flex-1 overflow-y-auto">
-            {items.map((item) => (
-              <div key={item.id} className="grid grid-cols-12 gap-4 p-3 border-b border-border-dark hover:bg-bg-card items-center transition-colors text-sm">
+            {sortedItems.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => toggleSelect(item.id)}
+                className="grid grid-cols-12 gap-4 p-3 border-b border-border-dark hover:bg-bg-card items-center transition-colors text-sm cursor-pointer"
+              >
                 <div className="col-span-3 flex items-center gap-3 min-w-0">
                   <input
                     type="checkbox"
                     checked={selectedIds.includes(item.id)}
                     onChange={() => toggleSelect(item.id)}
+                    onClick={(e) => e.stopPropagation()}
                     className="w-3.5 h-3.5 accent-accent rounded cursor-pointer shrink-0"
                   />
                   <div className="w-8 h-8 bg-bg-base rounded flex items-center justify-center shrink-0 border border-border-dark overflow-hidden">
@@ -136,7 +176,7 @@ export default function ItemsManager() {
                 </div>
                 <div className="col-span-4 text-xs text-text-sub truncate">{item.positive}</div>
                 <div className="col-span-1 text-right">
-                  <button onClick={() => setEditingId(item.id)} className="text-text-sub hover:text-accent transition-colors">
+                  <button onClick={(e) => { e.stopPropagation(); setEditingId(item.id) }} className="text-text-sub hover:text-accent transition-colors">
                     <IconPen width={14} height={14} />
                   </button>
                 </div>
@@ -169,10 +209,11 @@ export default function ItemsManager() {
           parts={selectedParts}
           pools={pools}
           onClose={() => setComposeOpen(false)}
-          onCreated={() => {
+          onCreated={(created) => {
             setComposeOpen(false)
             setSelectedIds([])
             refresh()
+            setEditingId(created.id)
           }}
         />
       )}

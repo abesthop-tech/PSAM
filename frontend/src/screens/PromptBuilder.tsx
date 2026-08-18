@@ -31,7 +31,7 @@ export default function PromptBuilder() {
   const [groupSearch, setGroupSearch] = useState('')
   const debouncedGroupSearch = useDebounced(groupSearch)
 
-  const [typeFilter, setTypeFilter] = useState<ItemType>('part')
+  const [typeFilter, setTypeFilter] = useState<'' | ItemType>('')
   const [itemSearch, setItemSearch] = useState('')
   const debouncedItemSearch = useDebounced(itemSearch)
   const [centerItems, setCenterItems] = useState<Item[]>([])
@@ -69,7 +69,7 @@ export default function PromptBuilder() {
       .listItems({
         pool: selectedPool,
         group_id: selectedGroupId ?? undefined,
-        type: typeFilter,
+        type: typeFilter || undefined,
         search: debouncedItemSearch || undefined,
       })
       .then(setCenterItems)
@@ -289,15 +289,15 @@ export default function PromptBuilder() {
             />
           </div>
           <div className="flex bg-bg-panel rounded-full p-0.5 border border-border-dark">
-            {(['part', 'finished'] as ItemType[]).map((t) => (
+            {(['', 'part', 'finished'] as const).map((t) => (
               <button
-                key={t}
+                key={t || 'all'}
                 onClick={() => setTypeFilter(t)}
                 className={`px-4 py-1 text-xs rounded-full transition-colors ${
                   typeFilter === t ? 'bg-bg-card text-text-main shadow border border-border-dark font-medium' : 'text-text-sub hover:text-text-main'
                 }`}
               >
-                {t === 'part' ? 'Part' : 'Finished'}
+                {t === '' ? 'All' : t === 'part' ? 'Part' : 'Finished'}
               </button>
             ))}
           </div>
@@ -305,7 +305,12 @@ export default function PromptBuilder() {
         <div className="flex-1 overflow-y-auto pr-1 pb-4">
           <div className="item-grid">
             {centerItems.map((item) => (
-              <ItemCard key={item.id} item={item} selected={addedIds.has(item.id)} onClick={() => addItem(item)} />
+              <ItemCard
+                key={item.id}
+                item={item}
+                selected={addedIds.has(item.id)}
+                onClick={() => (addedIds.has(item.id) ? removeItem(item.id) : addItem(item))}
+              />
             ))}
           </div>
           {centerItems.length === 0 && <div className="text-text-sub text-sm text-center mt-10">アイテムがありません</div>}

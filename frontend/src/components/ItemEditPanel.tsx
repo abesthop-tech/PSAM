@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { api } from '../api/client'
 import type { Group, Item, ItemDetail, ItemType, Pool, Variant } from '../types'
 import { IconImage, IconPlus, IconTrash, IconX } from './Icons'
 import ItemPickerModal from './ItemPickerModal'
+import Resizer from './Resizer'
 
 interface Props {
   itemId: number | null
@@ -65,25 +66,34 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
   const [variants, setVariants] = useState<Variant[]>([])
   const [newVariantText, setNewVariantText] = useState('')
   const [groupIds, setGroupIds] = useState<number[]>([])
+  const [pendingGroupIds, setPendingGroupIds] = useState<number[]>([])
   const [allPoolGroups, setAllPoolGroups] = useState<Group[]>([])
   const [addGroupSelect, setAddGroupSelect] = useState('')
   const [linkedItems, setLinkedItems] = useState<Item[]>([])
   const [tab, setTab] = useState<'basic' | 'groups' | 'links'>('basic')
   const [linkPickerOpen, setLinkPickerOpen] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [savedMessage, setSavedMessage] = useState(false)
+  const [panelWidth, setPanelWidth] = useState(450)
+  const initialDraftRef = useRef<string>('')
 
   const isNew = currentId === null
 
   useEffect(() => {
     if (currentId === null) {
-      setDraft(emptyDraft(initialPool))
+      const d = emptyDraft(initialPool)
+      setDraft(d)
+      initialDraftRef.current = JSON.stringify(d)
       setVariants([])
       setGroupIds([])
+      setPendingGroupIds([])
       setLinkedItems([])
       return
     }
     api.getItem(currentId).then((detail) => {
-      setDraft(draftFromItem(detail))
+      const d = draftFromItem(detail)
+      setDraft(d)
+      initialDraftRef.current = JSON.stringify(d)
       setVariants(detail.variants)
       setGroupIds(detail.group_ids)
       Promise.all(detail.linked_item_ids.map((id) => api.getItem(id).catch(() => null))).then((items) =>
@@ -121,17 +131,31 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
         memo: draft.memo.trim() || null,
       }
       if (isNew) {
-        const created = await api.createItem({ ...payload, variants: variants.map((v) => ({ variant_text: v.variant_text, sort_order: v.sort_order })) })
+        const created = await api.createItem({
+          ...payload,
+          variants: variants.map((v) => ({ variant_text: v.variant_text, sort_order: v.sort_order })),
+          group_ids: pendingGroupIds,
+        })
         setCurrentId(created.id)
       } else {
         await api.updateItem(currentId!, payload)
       }
+      initialDraftRef.current = JSON.stringify(draft)
+      setSavedMessage(true)
+      setTimeout(() => setSavedMessage(false), 2000)
       onSaved()
     } catch (e) {
       alert((e as Error).message)
     } finally {
       setSaving(false)
     }
+  }
+
+  function handleClose() {
+    if (JSON.stringify(draft) !== initialDraftRef.current) {
+      if (!confirm('保存されていない変更があります。破棄して閉じますか?')) return
+    }
+    onClose()
   }
 
   async function addVariant() {
@@ -161,13 +185,22 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
   }
 
   async function addToGroup() {
-    if (!addGroupSelect || !currentId) return
-    await api.addItemToGroup(currentId, Number(addGroupSelect))
-    setGroupIds((prev) => [...prev, Number(addGroupSelect)])
+    if (!addGroupSelect) return
+    const gid = Number(addGroupSelect)
+    if (isNew) {
+      setPendingGroupIds((prev) => [...prev, gid])
+    } else if (currentId) {
+      await api.addItemToGroup(currentId, gid)
+      setGroupIds((prev) => [...prev, gid])
+    }
     setAddGroupSelect('')
   }
 
   async function removeFromGroup(groupId: number) {
+    if (isNew) {
+      setPendingGroupIds((prev) => prev.filter((id) => id !== groupId))
+      return
+    }
     if (!currentId) return
     await api.removeItemFromGroup(currentId, groupId)
     setGroupIds((prev) => prev.filter((id) => id !== groupId))
@@ -196,10 +229,16 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
 
   return (
     <>
-      <div className="absolute right-0 top-0 bottom-0 w-[450px] bg-bg-panel border-l border-border-dark shadow-2xl flex flex-col z-30">
+      <div className="absolute top-0 bottom-0 flex z-40" style={{ right: panelWidth }}>
+        <Resizer onDelta={(d) => setPanelWidth((w) => Math.max(360, Math.min(800, w - d)))} />
+      </div>
+      <div
+        style={{ width: panelWidth }}
+        className="absolute right-0 top-0 bottom-0 bg-bg-panel border-l border-border-dark shadow-2xl flex flex-col z-30"
+      >
         <div className="p-4 border-b border-border-dark flex justify-between items-center bg-bg-card">
           <h3 className="font-medium text-lg">{isNew ? '新規アイテム' : 'アイテム編集'}</h3>
-          <button onClick={onClose} className="text-text-sub hover:text-text-main">
+          <button onClick={handleClose} className="text-text-sub hover:text-text-main">
             <IconX width={18} height={18} />
           </button>
         </div>
@@ -209,7 +248,7 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
             <button
               key={t}
               onClick={() => setTab(t)}
-              disabled={isNew && t !== 'basic'}
+              disabled={isNew && t === 'links'}
               className={`flex-1 py-3 text-sm border-b-2 transition-colors ${
                 tab === t ? 'text-accent border-accent font-medium bg-bg-panel' : 'text-text-sub border-transparent hover:text-text-main'
               } disabled:opacity-40 disabled:cursor-not-allowed`}
@@ -386,11 +425,12 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
           </div>
         )}
 
-        {tab === 'groups' && !isNew && (
+        {tab === 'groups' && (
           <div className="flex-1 p-5 overflow-y-auto">
+            {isNew && <div className="text-[11px] text-text-sub mb-3">※ Save Changesを押すと確定します</div>}
             <div className="text-sm text-text-sub mb-3">所属しているグループ</div>
             <div className="flex flex-wrap gap-2 mb-4">
-              {groupIds.map((gid) => {
+              {(isNew ? pendingGroupIds : groupIds).map((gid) => {
                 const g = allPoolGroups.find((x) => x.id === gid)
                 return (
                   <span key={gid} className="px-3 py-1.5 bg-bg-base border border-border-dark rounded text-xs text-text-main flex items-center gap-2 group hover:border-accent transition-colors">
@@ -401,7 +441,7 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
                   </span>
                 )
               })}
-              {groupIds.length === 0 && <span className="text-text-sub text-xs">所属グループなし</span>}
+              {(isNew ? pendingGroupIds : groupIds).length === 0 && <span className="text-text-sub text-xs">所属グループなし</span>}
             </div>
             <div className="flex gap-2">
               <select
@@ -411,7 +451,7 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
               >
                 <option value="">グループを選択...</option>
                 {allPoolGroups
-                  .filter((g) => !groupIds.includes(g.id))
+                  .filter((g) => !(isNew ? pendingGroupIds : groupIds).includes(g.id))
                   .map((g) => (
                     <option key={g.id} value={g.id}>
                       {g.name}
@@ -454,8 +494,9 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
           </div>
         )}
 
-        <div className="p-4 border-t border-border-dark bg-bg-panel flex justify-end gap-3 shrink-0">
-          <button onClick={onClose} className="px-4 py-2 rounded text-sm text-text-main bg-bg-card border border-border-dark hover:bg-[#333] transition-colors">
+        <div className="p-4 border-t border-border-dark bg-bg-panel flex justify-end items-center gap-3 shrink-0">
+          {savedMessage && <span className="text-xs text-accent mr-auto">保存しました</span>}
+          <button onClick={handleClose} className="px-4 py-2 rounded text-sm text-text-main bg-bg-card border border-border-dark hover:bg-[#333] transition-colors">
             Discard
           </button>
           <button

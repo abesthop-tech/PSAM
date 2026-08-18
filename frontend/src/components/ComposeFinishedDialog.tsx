@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { api } from '../api/client'
-import type { Item, Pool } from '../types'
+import type { Item, ItemDetail, Pool } from '../types'
 import { IconX } from './Icons'
 
 interface Props {
   parts: Item[]
   pools: Pool[]
   onClose: () => void
-  onCreated: () => void
+  onCreated: (created: ItemDetail) => void
 }
 
 export default function ComposeFinishedDialog({ parts, pools, onClose, onCreated }: Props) {
@@ -27,7 +27,7 @@ export default function ComposeFinishedDialog({ parts, pools, onClose, onCreated
     }
     setSaving(true)
     try {
-      await api.composeFinished({
+      const created = await api.composeFinished({
         pool,
         name: name.trim(),
         part_item_ids: parts.map((p) => p.id),
@@ -35,7 +35,7 @@ export default function ComposeFinishedDialog({ parts, pools, onClose, onCreated
         negative,
         memo: memo.trim() || undefined,
       })
-      onCreated()
+      onCreated(created)
     } catch (e) {
       alert((e as Error).message)
     } finally {

@@ -121,6 +121,13 @@ export default function GroupManager() {
     refreshGroups()
   }
 
+  async function quickRemoveFromPool(item: Item) {
+    if (selectedGroupId == null) return
+    await api.removeItemFromGroupBulk(selectedGroupId, item.id)
+    loadGroupItems()
+    refreshGroups()
+  }
+
   async function createGroup() {
     if (!newGroupName.trim()) return
     const g = await api.createGroup({ pool: selectedPool, name: newGroupName.trim() })
@@ -128,6 +135,7 @@ export default function GroupManager() {
     setCreatingGroup(false)
     setGroups((prev) => [...prev, g])
     setSelectedGroupId(g.id)
+    setScope('pool')
   }
 
   async function submitRename(id: number) {
@@ -273,17 +281,22 @@ export default function GroupManager() {
                   </button>
                 </div>
                 <div className="flex items-center gap-2">
-                  <select
-                    value={scope}
-                    onChange={(e) => {
-                      setScope(e.target.value as SearchScope)
-                      setSelectedIds([])
-                    }}
-                    className="bg-bg-base border border-border-dark rounded px-2 py-1 text-xs focus:outline-none focus:border-accent text-text-sub"
-                  >
-                    <option value="group">グループ内</option>
-                    <option value="pool">プール全体</option>
-                  </select>
+                  <div className="flex bg-bg-base rounded-full p-0.5 border border-border-dark">
+                    {(['group', 'pool'] as SearchScope[]).map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => {
+                          setScope(s)
+                          setSelectedIds([])
+                        }}
+                        className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                          scope === s ? 'bg-bg-card text-text-main shadow border border-border-dark font-medium' : 'text-text-sub hover:text-text-main'
+                        }`}
+                      >
+                        {s === 'group' ? 'グループ内' : 'プール全体'}
+                      </button>
+                    ))}
+                  </div>
                   <div className="relative w-48">
                     <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-sub" width={11} height={11} />
                     <input
@@ -298,7 +311,7 @@ export default function GroupManager() {
               </div>
               {scope === 'pool' && (
                 <div className="px-3 py-1.5 text-[11px] text-text-sub bg-bg-base border-b border-border-dark">
-                  プール全体から検索中: カードをクリックするとこのグループに追加されます
+                  プール全体から検索中: カードをクリックするとこのグループに追加/削除されます
                 </div>
               )}
 
@@ -316,7 +329,15 @@ export default function GroupManager() {
                       ))
                     : poolSearchItems.map((item) => {
                         const inGroup = groupItems.some((gi) => gi.id === item.id)
-                        return <ItemCard key={item.id} item={item} selected={inGroup} faded={inGroup} onClick={() => !inGroup && quickAddFromPool(item)} />
+                        return (
+                          <ItemCard
+                            key={item.id}
+                            item={item}
+                            selected={inGroup}
+                            faded={inGroup}
+                            onClick={() => (inGroup ? quickRemoveFromPool(item) : quickAddFromPool(item))}
+                          />
+                        )
                       })}
                 </div>
                 {scope === 'group' && filteredGroupItems.length === 0 && (
