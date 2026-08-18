@@ -1,0 +1,44 @@
+{
+  "_note": {
+    "purpose": "構図探索用。グループごとに1つ排他選択し、破綻しない構図をランダムに出す。良い組み合わせが見つかったら、Obsidianの「演出構図.md」等に手動で記録する運用。",
+    "structure": "表情プール(expression_pool.json)とは方式が異なる。表情はカテゴリ横断で複数語を混ぜるが、構図は「1グループにつき1タグだけ排他選択」が基本。BASE_POSTUREを起点(root_group)とし、選ばれた値によってLYING_ORIENTATION/LEGS/TORSO_LEANの有効・無効を切り替える木構造。空文字列(\"\")を選択肢に含めることで「そのグループのタグを付けない」を表現する(候補プールにも空文字を混ぜてある)。",
+    "source": "Danbooru tag_group:image_composition (View Angle / Framing the Body)、tag_group:posture (Basic positions / Movement of the body / Torso inclination / Arms / Legs)、tag_group:gestures より実在タグを抽出。CHARACTER_ORIENTATIONのみdanbooruに独立タググループが無いため、演出構図.mdの整理(looking at viewer等)を流用。"
+  },
+  "FRAMING": [
+    "upper body",
+    "cowboy shot",
+    "full body",
+    "close-up"
+  ],
+  "VIEW_ANGLE": [
+    "straight-on",
+    "from above",
+    "from below"
+  ],
+  "CHARACTER_ORIENTATION": [
+    "looking at viewer",
+    "facing viewer",
+    "looking away"
+  ],
+  "LYING_ORIENTATION": [
+    ""
+  ],
+  "ARMS": [
+    "arms up",
+    "arms behind head",
+    "spread arms",
+    "outstretched arms"
+  ],
+  "LEGS": [
+    "",
+    "legs apart",
+    "m legs",
+    "spread legs"
+  ],
+  "HANDS_GESTURE": [
+    ""
+  ],
+  "PERSPECTIVE_EMPHASIS": [
+    ""
+  ]
+}

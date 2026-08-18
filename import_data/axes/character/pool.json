@@ -1,0 +1,636 @@
+{
+  "_note": {
+    "purpose": "キャラクター切り替え用プール。1キャラ=1エントリ。positiveはワークフローのpositiveノード内『キャラクター断片』と置換、negativeはnegativeノードの末尾に追記、loraはキャラ専用LoRAのファイル名（無い場合はnull＝そのキャラの生成時はキャラLoRAノードをバイパスしてグラフを繋ぎ替える）。",
+    "source": "キャラのプロンプト.md（2026-08時点）から機械的に抽出。ネガティブは元メモに記載があるキャラのみ転記し、未記載キャラは空文字列のまま。"
+  },
+  "The Herta": {
+    "positive": "The Herta,long hair,grey hair, brown hair,flat chest,x hair ornaments,",
+    "negative": "",
+    "lora": "マダムヘルタ.safetensors",
+    "memo": "任意でwitch hatも。key,earrings, flower, bangs, hat flower,purple flowerとかもいい。LoRAは別名『マダムヘルタ』名義のファイルをユーザーが確認し紐付け。"
+  },
+  "雲離": {
+    "positive": "yunli_\\(honkai_star_rail\\), yellow eyes,black hair ,low twintails ,tiara, anklet,earrings,small breasts,",
+    "negative": "",
+    "lora": "雲離.safetensors"
+  },
+  "アグライア": {
+    "positive": "aglaea \\(honkai: star rail\\),hair flower, laurel crown, peplos, thigh strap, breast tattoo, short blonde hair, green eyes, large breasts,",
+    "negative": "",
+    "lora": "アグライア.safetensors"
+  },
+  "爻光": {
+    "positive": "Yaoguang, long hair, white hair,blue eyes,hair ornaments, medium breasts,",
+    "negative": "",
+    "lora": "爻光.safetensors"
+  },
+  "ロビン": {
+    "positive": "robin \\(honkai: star rail\\),halo, earrings,head wings, long hair, blue hair, white hair,green eyes, medium breasts,",
+    "negative": "",
+    "lora": "ロビン.safetensors"
+  },
+  "火花": {
+    "positive": "Sparxie, white hair,red streaks,twintails,braids,facial marks, diamond,heart,black mini top hat,",
+    "negative": "",
+    "lora": "火花.safetensors"
+  },
+  "ヒアンシー": {
+    "positive": "hyacine \\(honkai: star rail\\),red beret, pink hair, long pink hair, blue gradient hair, twin drills,aqua eyes,blue eyes,",
+    "negative": "",
+    "lora": "ヒアンシー.safetensors"
+  },
+  "キュレネ(モモ)": {
+    "positive": "cyrene \\(honkai: star rail\\),medium hair,medium-length pink hair,blue eyes, pink diamond-shaped pupils, pink ribbon, hair ornament,flat breasts,",
+    "negative": "",
+    "lora": "キュレネ(モモ).safetensors"
+  },
+  "デミウルゴス": {
+    "positive": "cyrene_\\(ripples_of_past_reverie\\) , purple eyes, pink hair, gradient hair,multicolored hair,pointy ears, diamond-shaped pupils,hair flower,hair ornament,earrings , very long hair,large breasts,",
+    "negative": "sleeveless dress,bare shoulders ,jewelry ,elf ,bracelet, white_high heels,",
+    "lora": "キュレネ.safetensors",
+    "memo": "おなか周りの服が何かと結びついてる、というメモが元ファイルにあり。ネガティブで抑える運用。LoRAは『キュレネ』（無印、モモとは別ファイル）をキュレネの別スキンとしてユーザーが確認し紐付け。"
+  },
+  "ケリュドラ": {
+    "positive": "cerydra \\(honkai star rail\\), crown, blue hair, blue eyes, hair print, wings, white hair, long hair,braid, mini crown,medium_breasts,",
+    "negative": "",
+    "lora": "ケリュドラ.safetensors"
+  },
+  "花火": {
+    "positive": "sparkle \\(honkai: star rail\\),long hair,black hair,twintails, hair ornament, mask on head,small breasts,",
+    "negative": "",
+    "lora": "花火.safetensors"
+  },
+  "三月なのか": {
+    "positive": "march_7th_(honkai:_star_rail),pink_hair, blue_eyes, pink_eyes, hair_between_eyes, medium_hair, medium_breasts, hair_ornament,",
+    "negative": "",
+    "lora": null,
+    "memo": "LoRAファイル一覧に対応する名前が見当たらず未確定。判明次第lora欄を埋める。"
+  },
+  "長夜月": {
+    "positive": "evernight \\(honkai: star rail\\), red eyes,medium hair,pink hair,single earring,hair ornament,hair flower,",
+    "negative": "",
+    "lora": "長夜月.safetensors"
+  },
+  "金色の闇": {
+    "positive": "konjiki no yami,very long hair, two side up, hair ornament, medium breasts,red eyes,\nbare shoulders, black dress, clothing cutout, detached sleeves, belt, thigh strap,",
+    "negative": "",
+    "lora": null,
+    "memo": "服がないとだれかわからない"
+  },
+  "ルアン・メェイ": {
+    "positive": "ruan mei (honkai: star rail),long hair,black hair,hair intakes,blue eyes,medium breasts,pearl necklace,",
+    "negative": "",
+    "lora": null
+  },
+  "ララ": {
+    "positive": "lala satalin deviluke,long hair,pink hair,hair_ornament,ahoge,blue_eyes,",
+    "negative": "",
+    "lora": null
+  },
+  "古手川唯": {
+    "positive": "kotegawa yui,black hair ,long hair,large breasts,yellow eyes,",
+    "negative": "",
+    "lora": null
+  },
+  "霧切響子": {
+    "positive": "kirigiri kyoko,long purple hair, side braid,purple eyes,flat chest,",
+    "negative": "",
+    "lora": null
+  },
+  "七海千秋": {
+    "positive": "nanami chiaki,midium hair,light brown medium hair,Galaga hairclip,pink eyes,large breasts,tareme,",
+    "negative": "",
+    "lora": null
+  },
+  "ゼーレ": {
+    "positive": "seele (honkai: star rail),long purple hair,ahoge, purple eyes,medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "クラーラ": {
+    "positive": "clara (honkai: star rail),long white hair, hair intakes,red eyes,small breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "ブローニャ": {
+    "positive": "bronya rand,long grey hair, grey eyes,medium breasts, earrings,",
+    "negative": "",
+    "lora": null
+  },
+  "星": {
+    "positive": "stelle (honkai: star rail),gray hair,long hair,yellow eyes, large breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "トパーズ": {
+    "positive": "topaz (honkai: star rail),medium-length grey hair,red streaks, blue eyes,large breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "アスター": {
+    "positive": "asta (honkai: star rail), long pink hair,hairclip, purple eyes,medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "ブラックスワン": {
+    "positive": "large breasts,black swan (honkai: star rail),long hair,light purple hair, purple eyes,",
+    "negative": "",
+    "lora": null,
+    "memo": "元メモのLoRA記載は『ブラックスワン』のみで拡張子なし。ファイル未確認のためlora:null（ユーザー確認済み）。"
+  },
+  "フォフォ": {
+    "positive": "huohuo (honkai: star rail),long green hair, ahoge,green eyes,paw-shaped pupils,",
+    "negative": "",
+    "lora": null
+  },
+  "銀狼": {
+    "positive": "silver wolf (honkai: star rail), long grey hair, blue gradient,drill ponytail,grey eyes,small breasts,goggles on her head,goggles on her head,",
+    "negative": "",
+    "lora": null
+  },
+  "カフカ": {
+    "positive": "kafka (honkai: star rail),long purple hair, blank purple eyes,large breasts,pince-nez,",
+    "negative": "",
+    "lora": null
+  },
+  "紫雲清夏": {
+    "positive": "shiunsumika, very long hair, orange hair, straight hair, blunt bangs, hairclip, green eyes, medium breasts,",
+    "negative": "",
+    "lora": "紫雲清夏.safetensors"
+  },
+  "葛城リーリヤ": {
+    "positive": "katsuragililja, short hair, grey hair, side braids, hair ornament, blue eyes, medium breasts,",
+    "negative": "",
+    "lora": "葛城リーリヤ.safetensors"
+  },
+  "秦谷美鈴": {
+    "positive": "hatayamisuzu, short hair, purple hair, blunt bangs, braid, hair flower, grey eyes, mole under mouth, medium breasts,",
+    "negative": "",
+    "lora": "秦谷美鈴.safetensors"
+  },
+  "月村手毬": {
+    "positive": "tsukimuratemari, very long hair, dark green hair, ahoge, messy hair,antenna hair, crossed bangs, green eyes, medium breasts,",
+    "negative": "",
+    "lora": "月村手毬.safetensors"
+  },
+  "藤田ことね": {
+    "positive": "fujitakotone, blonde hair, low twin braids, hair ribbon, black ribbon, pearl hairclip, blunt bangs, hair over shoulder, long hair, yellow eyes, small breasts,",
+    "negative": "",
+    "lora": "藤田ことね.safetensors"
+  },
+  "花海咲季": {
+    "positive": "hanamisaki, medium hair, red hair, double bun, two side up, bangs, wavy hair, purple eyes, small breasts,",
+    "negative": "",
+    "lora": "花海咲季.safetensors"
+  },
+  "賀陽燐羽": {
+    "positive": "kaya rinha, purple hair, long hair, twintails, braid, hair ornament, blue eyes, mole on neck,",
+    "negative": "",
+    "lora": "賀陽燐羽.safetensors"
+  },
+  "根緒亜紗里": {
+    "positive": "neoasari, short hair, brown hair, bangs, purple eyes, medium breasts, necklace,",
+    "negative": "",
+    "lora": "根緒亜紗里.safetensors"
+  },
+  "真城優": {
+    "positive": "mashiroyuu, dark purple hair, ahoge, multiple hairpins, parted bangs, colored inner hair, short hair, red eyes,small breasts,",
+    "negative": "",
+    "lora": "真城優.safetensors"
+  },
+  "花海佑芽": {
+    "positive": "hanamiume, medium hair, brown hair, ahoge, single hair bun, brown eyes, large breasts,",
+    "negative": "",
+    "lora": "花海佑芽.safetensors"
+  },
+  "十王星南": {
+    "positive": "juuousena, very long hair, blonde hair, parted bangs, forehead, streaked hair, wavy hair, purple eyes,",
+    "negative": "",
+    "lora": "十王星南.safetensors"
+  },
+  "篠澤広": {
+    "positive": "shinosawahiro, long hair, grey hair, gradient hair, parted bangs, hairclip, orange eyes,",
+    "negative": "",
+    "lora": "篠澤広.safetensors"
+  },
+  "イオリ(ブルアカ)": {
+    "positive": "iori (blue archive), very long hair, grey hair, twintails, hair over one eye, red eyes, small breasts, halo,",
+    "negative": "",
+    "lora": null
+  },
+  "イロハ(ブルアカ)": {
+    "positive": "iroha (blue archive), long hair, red hair, grey eyes, small breasts, halo,",
+    "negative": "",
+    "lora": null
+  },
+  "エイミ(ブルアカ)": {
+    "positive": "eimi (blue archive), long hair, pink hair, ponytail, pink eyes, large breasts, halo, goggles on head,",
+    "negative": "",
+    "lora": null
+  },
+  "アリス(ブルアカ)": {
+    "positive": "aris (blue archive), very long hair, black hair, one side up, hair between eyes, blue eyes, flat chest, halo,",
+    "negative": "",
+    "lora": null
+  },
+  "シロコ(ブルアカ)": {
+    "positive": "shiroko (blue archive), medium hair, grey hair, low ponytail, cross hair ornament, blue eyes, medium breasts, halo, wolf ears,",
+    "negative": "",
+    "lora": null
+  },
+  "セイア(ブルアカ)": {
+    "positive": "seia (blue archive), long hair, blonde hair, gradient hair, gradient eyes, small breasts, halo, fox ears,",
+    "negative": "",
+    "lora": null
+  },
+  "トキ(ブルアカ)": {
+    "positive": "toki (blue archive), short hair, blonde hair, blue streaks, single hair bun, half updo, blue eyes, medium breasts, halo,",
+    "negative": "",
+    "lora": null
+  },
+  "ナギサ(ブルアカ)": {
+    "positive": "nagisa (blue archive), long hair, light brown hair, crown braid, double-parted bangs, hair flower, brown eyes, halo,large breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "ノア(ブルアカ)": {
+    "positive": "noa (blue archive), very long hair, silver hair, blunt bangs, purple eyes, large breasts, halo,",
+    "negative": "",
+    "lora": null
+  },
+  "ヒナ(ブルアカ)": {
+    "positive": "hina (blue archive), very long hair, white hair, parted bangs, ahoge, purple eyes, small breasts, black halo, demon horns,",
+    "negative": "",
+    "lora": null
+  },
+  "ヒフミ(ブルアカ)": {
+    "positive": "hifumi (blue archive), long hair, blonde hair, low twintails, wing hair ornament, yellow eyes, small breasts, halo,",
+    "negative": "",
+    "lora": null
+  },
+  "ホシノ(ブルアカ)": {
+    "positive": "hoshino (blue archive), very long hair, pink hair, ahoge, low twintails, heterochromia, blue eyes, yellow eyes, small breasts, halo,",
+    "negative": "",
+    "lora": null
+  },
+  "マリー(ブルアカ)": {
+    "positive": "mari (blue archive), long hair, orange hair, low twintails, hair between eyes, white hairband, hair flower, blue eyes, small breasts, halo, cat ears,",
+    "negative": "",
+    "lora": null
+  },
+  "ミカ(ブルアカ)": {
+    "positive": "mika (blue archive), very long hair, pink hair, gradient hair, single side bun, hair flower, yellow eyes, large breasts, halo,",
+    "negative": "",
+    "lora": null
+  },
+  "ミヤコ(ブルアカ)": {
+    "positive": "miyako (blue archive), long hair, white hair, one side up, purple eyes, halo, rabbit ear headphones,small breasts",
+    "negative": "",
+    "lora": null
+  },
+  "ムツキ(ブルアカ)": {
+    "positive": "mutsuki (blue archive), long hair, white hair, side ponytail, black hairband, hair ornament, purple eyes, slit pupils, small breasts, halo,",
+    "negative": "",
+    "lora": null
+  },
+  "ユズ(ブルアカ)": {
+    "positive": "yuzu (blue archive), very long hair, red hair, ahoge, hair bow, purple eyes, small breasts, halo, cat ear headphones,",
+    "negative": "",
+    "lora": null
+  },
+  "カヨコ(ブルアカ)": {
+    "positive": "kayoko (blue archive), long hair, black hair, white hair, two-tone hair, ponytail, red eyes, halo, horns,small breasts",
+    "negative": "",
+    "lora": null
+  },
+  "アスナ(ブルアカ)": {
+    "positive": "asuna (blue archive), long hair, light brown hair, hair over one eye, blue hair ribbon, blue eyes, large breasts, halo,",
+    "negative": "",
+    "lora": null
+  },
+  "ケイ(ブルアカ)": {
+    "positive": "keiBA, long hair, white hair, hair between eyes, black hairband, hair bow, pink halo, red eyes, white pupils, white_ringed_eyes,small breasts",
+    "negative": "",
+    "lora": "ケイ(ブルアカ).safetensors"
+  },
+  "ニコ(ブルアカ)": {
+    "positive": "niko (blue archive), short hair, pink hair, bob cut, blunt bangs, blue eyes, medium breasts, halo, fox ears,",
+    "negative": "",
+    "lora": null
+  },
+  "オトギ(ブルアカ)": {
+    "positive": "otogi, long hair, grey hair, single braid, ahoge, long bangs, green halo, green eyes, small breasts, animal ears,",
+    "negative": "",
+    "lora": "オトギ(ブルアカ).safetensors"
+  },
+  "キサキ(ブルアカ)": {
+    "positive": "kisaki_\\(blue_archive\\), long hair, black hair, double bun, twintails, kisaki halo, butterfly hair ornament, grey eyes, small breasts,",
+    "negative": "",
+    "lora": "キサキ(ブルアカ).safetensors"
+  },
+  "アオバ(ブルアカ)": {
+    "positive": "AobaBA, long hair, light blonde hair, low twintails, fluffy hair, sidelocks, orange hairclip, orange halo, orange eyes,small breasts",
+    "negative": "",
+    "lora": "アオバ(ブルアカ).safetensors"
+  },
+  "蛍(原神)": {
+    "positive": "lumine (genshin impact), medium hair, blonde hair, hair flower, feather hair ornament, yellow eyes, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "アルレッキーノ(原神)": {
+    "positive": "arlecchino (genshin impact), long hair, white hair, black hair, multicolored hair, hair over one eye, red eyes, x-shaped pupils, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "宵宮(原神)": {
+    "positive": "yoimiya (genshin impact), long hair, blonde hair, ponytail, hair flower, red eyes, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "胡桃(原神)": {
+    "positive": "hu tao (genshin impact), long hair, brown hair, twintails, red eyes, flower-shaped pupils, small breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "シュヴルーズ(原神)": {
+    "positive": "chevreuse (genshin impact), very long hair, purple hair, streaked hair, crossed bangs, purple eyes, mole under mouth, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "フリーナ(原神)": {
+    "positive": "furina (genshin impact), short hair, light blue hair, ahoge, blue eyes, heterochromia, mismatched pupils, small breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "ニィロウ(原神)": {
+    "positive": "nilou (genshin impact), long hair, red hair, twintails, hair ornament, blue eyes, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "珊瑚宮心海(原神)": {
+    "positive": "sangonomiya kokomi, long hair, pink hair, hair ornament, purple eyes, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "バーバラ(原神)": {
+    "positive": "barbara (genshin impact), long hair, blonde hair, twin braids, hair ornament, blue eyes, small breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "神里綾華(原神)": {
+    "positive": "kamisato ayaka, long hair, light blue hair, ponytail, hair ornament, blue eyes, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "甘雨(原神)": {
+    "positive": "ganyu (genshin impact), very long hair, blue hair, ahoge, horns, purple eyes, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "エウルア(原神)": {
+    "positive": "eula (genshin impact), short hair, light blue hair, hair ornament, blue eyes, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "シャルロット(原神)": {
+    "positive": "charlotte (genshin impact), medium hair, pink hair, braid, aqua eyes, monocle,",
+    "negative": "",
+    "lora": null
+  },
+  "レイラ(原神)": {
+    "positive": "layla (genshin impact), long hair, blue hair, gradient hair, hair ornament, blue eyes, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "八重神子(原神)": {
+    "positive": "yae miko, very long hair, pink hair, ponytail, purple eyes, fox ears, large breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "雷電将軍(原神)": {
+    "positive": "raiden shogun, very long hair, purple hair, braid, hair ornament, purple eyes, large breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "刻晴(原神)": {
+    "positive": "keqing (genshin impact), long hair, purple hair, twintails, hair ornament, purple eyes, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "久岐忍(原神)": {
+    "positive": "kuki shinobu, short hair, purple hair, ponytail, purple eyes, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "フィッシュル(原神)": {
+    "positive": "fischl (genshin impact), long hair, blonde hair, twintails, hair ribbon, green eyes, eyepatch, small breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "ジン(原神)": {
+    "positive": "jean (genshin impact), long hair, blonde hair, ponytail, blue eyes, large breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "千織(原神)": {
+    "positive": "chiori (genshin impact), medium hair, brown hair, blonde hair, multicolored hair, drill hair, hair stick, red eyes, medium breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "ナヴィア(原神)": {
+    "positive": "navia (genshin impact), very long hair, blonde hair, drill hair, drill sidelocks, blue eyes, large breasts,",
+    "negative": "",
+    "lora": null
+  },
+  "ナヒーダ(原神)": {
+    "positive": "nahida (genshin impact), short hair, white hair, green eyes, symbol-shaped pupils, flat chest,",
+    "negative": "",
+    "lora": null
+  },
+  "綺良々(原神)": {
+    "positive": "kirara (genshin impact), long hair, brown hair, ponytail, ahoge, hair intakes, cat ear hair ornament, hairclip, green eyes, medium breasts, cat tail,",
+    "negative": "",
+    "lora": null
+  },
+  "コレイ(原神)": {
+    "positive": "collei (genshin impact), medium hair, green hair, crossed bangs, ahoge, hair ornament, purple eyes, flat chest,",
+    "negative": "",
+    "lora": null
+  },
+  "コロンビーナ(原神)": {
+    "positive": "columbina \\(genshin impact\\),(purple eyes),x hair ornament,wing hair ornament,head wings,hair ribbon,long hair,",
+    "negative": "",
+    "lora": "コロンビーナ(原神).safetensors"
+  },
+  "サンドローネ(原神)": {
+    "positive": "sandrone_(genshin_impact),blue eyes, brown hair,  hair bun , long sidelocks, frilled hairband,blue eyes, medium breasts,",
+    "negative": "",
+    "lora": "サンドローネ(原神).safetensors"
+  },
+  "ヤフォダ(原神)": {
+    "positive": "Jahoda, short hair, blonde hair, twin braids, braided ponytail, goggles on head, symbol-shaped pupils, star \\(symbol\\), small breasts, mechanical arm,",
+    "negative": "",
+    "lora": "ヤフォダ(原神).safetensors"
+  },
+  "ムアラニ(原神)": {
+    "positive": "gimmlni, very long hair, white hair, braid, low twin braids, ponytail, blue headband, red eyes, fish-shaped pupils, blue pupils, dark-skinned female, medium breasts, animal ears,",
+    "negative": "",
+    "lora": "ムアラニ(原神).safetensors"
+  },
+  "シトラリ(原神)": {
+    "positive": "citlali_(genshin_impact), long hair, pink hair, multicolored hair, braid, twin braids, hair intakes, hair ornament, headgear, blue eyes, facial mark, medium breasts,",
+    "negative": "",
+    "lora": "シトラリ(原神).safetensors"
+  },
+  "ネフェル(原神)": {
+    "positive": "nefer \\(genshin impact\\),green eyes,green hair,large breasts,short hair,",
+    "negative": "",
+    "lora": "ネフェル(原神).safetensors"
+  },
+  "ニコ(原神)": {
+    "positive": "Nicole reeyn (creator:wiehhg),white hat,white headwear,large breasts,diamond-shaped pupils,symbol-shaped pupils,light blonde hair,forehead jewel,facial mark,official costume,",
+    "negative": "",
+    "lora": "ニコ(原神).safetensors"
+  },
+  "アリス(原神)": {
+    "positive": "EBAlice, very long hair, blonde hair, ahoge, hair ornament, mechanical halo, orange eyes, large breasts, pointy ears,",
+    "negative": "",
+    "lora": "アリス(原神).safetensors"
+  },
+  "カリン(ゼンゼロ)": {
+    "positive": "crnwks, long hair, green hair, twintails, hair between eyes, purple eyes,small breasts",
+    "negative": "",
+    "lora": "カリン(ゼンゼロ).safetensors"
+  },
+  "アンビー(ゼンゼロ)": {
+    "positive": "zzAnby, orange eyes, short hair, white hair,   headphones, navel, stomach, small breasts,",
+    "negative": "",
+    "lora": "アンビー(ゼンゼロ).safetensors"
+  },
+  "ニコ(ゼンゼロ)": {
+    "positive": "nicole demara, long hair, pink hair, two side up, hair ornament, hair ribbon, hairclip, green eyes, mole under eye, mole on breast, large breasts,",
+    "negative": "",
+    "lora": "ニコ(ゼンゼロ).safetensors"
+  },
+  "ルーシー(ゼンゼロ)": {
+    "positive": "luciana de montefio, long hair, blonde hair, side ponytail, red eyes, small breasts,",
+    "negative": "",
+    "lora": "ルーシー(ゼンゼロ).safetensors"
+  },
+  "エレン(ゼンゼロ)": {
+    "positive": "zzEllen, black hair, colored inner hair, multicolored hair, red eyes, red hair, short hair, two-tone hair,  ear piercing, piercing,shark girl, shark tail, large breasts,",
+    "negative": "",
+    "lora": "エレン(ゼンゼロ).safetensors"
+  },
+  "葉瞬光(ゼンゼロ)": {
+    "positive": "sdYeShunguang, very long hair, brown hair, two-tone hair, hairband, red_eyes, red_eyeliner, highlighted_eyes, medium breasts, fox tail,",
+    "negative": "",
+    "lora": "葉瞬光(ゼンゼロ).safetensors"
+  },
+  "ダイアリン(ゼンゼロ)": {
+    "positive": "Dialyn,twin braids,black hair,yellow eyes,double bun,white hair,two-tone hair,multicolored eyes,twintails,bell,small breasts,",
+    "negative": "",
+    "lora": "ダイアリン(ゼンゼロ).safetensors"
+  },
+  "アリス(ゼンゼロ)": {
+    "positive": "al1ce, very long hair, blonde hair, braid, low twintails, hair bobbles, heterochromia, red eyes, yellow eyes, large breasts, animal ears,",
+    "negative": "",
+    "lora": "アリス(ゼンゼロ).safetensors"
+  },
+  "浮波柚葉(ゼンゼロ)": {
+    "positive": "ukinami yuzuha,green eyes,red hair, hair bobbles,twin braids, white bow, large breasts, hair ornament,  ahoge, hair bow,  twintails, blunt bangs,",
+    "negative": "",
+    "lora": "浮波柚葉(ゼンゼロ).safetensors"
+  },
+  "千夏(ゼンゼロ)": {
+    "positive": "ZZSND, medium hair, green hair, ponytail, one side up, hair ornament, hairclip, green eyes, thick eyebrows, wings,small breasts,",
+    "negative": "",
+    "lora": "千夏(ゼンゼロ).safetensors"
+  },
+  "イヴリン(ゼンゼロ)": {
+    "positive": "ch3v4l13r, long hair, blonde hair, braided bun, sidelocks, asymmetrical bangs, ring hair ornament, purple eyes, mole under eye, large breasts, earrings,",
+    "negative": "",
+    "lora": "イヴリン(ゼンゼロ).safetensors"
+  },
+  "ノルムー(ゼンゼロ)": {
+    "positive": "norma \\(zenless zone zero\\), very long hair, blonde hair, blunt bangs, sidelocks, purple eyes, white headwear,small breasts,",
+    "negative": "",
+    "lora": "ノルムー(ゼンゼロ).safetensors"
+  },
+  "イドリー(ゼンゼロ)": {
+    "positive": "y1dh4ri, short hair, blonde hair, black hair, streaked hair, cowlick, hair between eyes, purple eyes, yellow eyes, multicolored eyes, ringed eyes, mole under mouth, large breasts, squid girl, tentacle tail,",
+    "negative": "",
+    "lora": "イドリー(ゼンゼロ).safetensors"
+  },
+  "照(ゼンゼロ)": {
+    "positive": "EBZhao,small breasts, long hair, red eyes, white pupils, twintails, pink hair, ahoge, braid, twin braids, animal ear fluff, rabbit ears, rabbit girl, rabbit tail, bright pupils, tassel, furry female, body fur, white fur, animal nose, jewelry, earrings, ear piercing, tassel hair ornament, thick eyebrows,",
+    "negative": "",
+    "lora": "照(ゼンゼロ).safetensors"
+  },
+  "星見雅(ゼンゼロ)": {
+    "positive": "Miyabi, long hair, black hair, braid, blunt bangs, red eyes, fox ears, animal ear fluff,large breasts,",
+    "negative": "",
+    "lora": "星見雅(ゼンゼロ).safetensors"
+  },
+  "トリガー(ゼンゼロ)": {
+    "positive": "tr1gg3r, long hair, blonde hair, ponytail, parted bangs, hair intakes, ponytail, triangle hair ornament, headgear, covered eyes, black blindfold,large breasts,",
+    "negative": "yellow cape, grey chest guard, pouch, black jacket, cropped jacket, hooded jacket, camouflage jacket, juliet sleeves, harness, multiple straps, camouflage pants, two-tone pants, black pants, yellow pants, thigh strap, knee pads, black gloves, fingerless gloves,\n",
+    "lora": "トリガー(ゼンゼロ).safetensors"
+  },
+  "月城柳(ゼンゼロ)": {
+    "positive": "tsukishiro yanagi (zenless zone zero), medium hair, pink hair, sidelocks, braid, ring ornament, hair ornament, purple eyes, under-rim eyewear, black-framed eyewear, large breasts,",
+    "negative": "",
+    "lora": "月城柳(ゼンゼロ).safetensors"
+  },
+  "儀玄(ゼンゼロ)": {
+    "positive": "yixuan, yixuan (zenless zone zero), long hair, white hair, ahoge, sidelocks, hairclip, yellow eyes, large breasts, mature female,",
+    "negative": "",
+    "lora": "儀玄(ゼンゼロ).safetensors"
+  },
+  "アストラ(ゼンゼロ)": {
+    "positive": "astra yao, long hair, black hair, blunt bangs, hair intakes, white hairband, red eyes, large breasts, mature female, pearl necklace,",
+    "negative": "",
+    "lora": "アストラ(ゼンゼロ).safetensors"
+  },
+  "ビビアン(ゼンゼロ)": {
+    "positive": "v1v1an, long hair, purple hair, white hair, streaked hair, multicolored hair, drill hair, drill sidelocks, ahoge, swept bangs, purple hairband, purple hair bow, red eyes, mole under eye, medium breasts, pointy ears,",
+    "negative": "",
+    "lora": "ビビアン(ゼンゼロ).safetensors"
+  },
+  "レミエール(ゼンゼロ)": {
+    "positive": "remielle_dan, short hair, pink hair, bob cut, layered hair, side bangs, hair between eyes, purple eyes, pink eyes, gradient eyes, slit pupils, large breasts, pointed ears,",
+    "negative": "",
+    "lora": "レミエール(ゼンゼロ).safetensors"
+  },
+  "南宮羽(ゼンゼロ)": {
+    "positive": "zzz style, 1girl, Nangong Yu, solo, multicolored hair, black hair, pink hair highlights, bangs, sideburns, flip out hair, pink hair ribbons, green hair ribbons, ahoge, twin high ponytails, red eyes,small breasts,",
+    "negative": "",
+    "lora": "南宮羽(ゼンゼロ).safetensors"
+  },
+  "朱鳶(ゼンゼロ)": {
+    "positive": "zhu yuan, long hair, black hair, streaked hair, ponytail, red eyes, large breasts,",
+    "negative": "",
+    "lora": "朱鳶(ゼンゼロ).safetensors"
+  },
+  "ヴェリナ(ゼンゼロ)": {
+    "positive": "velina airgid, very long hair, white hair, low twintails, white hair bow, purple eyes, large breasts, ginkgo earrings,",
+    "negative": "",
+    "lora": "ヴェリナ(ゼンゼロ).safetensors"
+  },
+  "Fairy(実体化)(ゼンゼロ)": {
+    "positive": "fa1ry, long hair, white hair, blue hair, gradient hair, glitch hair, blunt bangs, sidelocks, hairband, blue eyes, symbol-shaped pupils, large breasts,",
+    "negative": "",
+    "lora": "Fairy(実体化)(ゼンゼロ).safetensors"
+  },
+  "緋英(スタレ)": {
+    "positive": "hsresc, medium hair, pink hair, hair between eyes, hair flower, red bow, purple eyes, hair bow,black choker,medium breasts, animal ears,",
+    "negative": "",
+    "lora": "緋英(スタレ).safetensors"
+  },
+  "パール(スタレ)": {
+    "positive": "pearl (honkai: star rail),joints,blonde hair,long hair,blue eyes,blonde hair,bangs,medium breasts,",
+    "negative": "",
+    "lora": "パール(スタレ).safetensors"
+  }
+}

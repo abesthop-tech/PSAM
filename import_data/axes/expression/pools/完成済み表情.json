@@ -1,0 +1,81 @@
+{
+  "_config": {
+    "word_range": [
+      1,
+      1
+    ],
+    "group": null,
+    "preset": true
+  },
+  "_note": {
+    "purpose": "完成済み表情プリセット。各グループから1つの完成済み表情プロンプトをランダム選択する。",
+    "structure": "各emotionグループに完成済み表情プロンプトを1つだけ格納する。通常の単語プールとは異なり、選択されたプロンプトは複数タグを含む1セットとして扱う。",
+    "source": "既存の表情単語プールから探索・作成した完成済み表情セット"
+  },
+  "照れ顔": [
+    "nose blush,embarrassed,"
+  ],
+  "戸惑う": [
+    "confused,??, ?,thinking,"
+  ],
+  "無表情": [
+    "expressionless, blank stare,"
+  ],
+  "!!!": [
+    "surprised,!,!!,spoken exclamation mark,embarrassed,^^^,"
+  ],
+  "照れ困惑": [
+    ":o, (?:1.15), (??:1.1), (confused:1.2), parted lip, raised eyebrows, confident,doyagao,smug,nose blush,embarrassed,"
+  ],
+  "喜んでる・・・？": [
+    "heart-shaped pupils, smile,happy,"
+  ],
+  "?しながら紅潮しながら目元暗い": [
+    "shaded face,glaring,?,??,confident,doyagao,smug,nose blush,embarrassed,:o,"
+  ],
+  "・・・///": [
+    "nervous smile, sweatdrop, sweat drop,"
+  ],
+  "笑顔": [
+    "happy,laughter,smile,excited"
+  ],
+  "??": [
+    "confused,??, ?,"
+  ],
+  "?o?": [
+    ":o,??, ?,"
+  ],
+  "?v?": [
+    "confused,??, ?,chestnut mouth,parted lips,"
+  ],
+  "退屈 いぶかしむ": [
+    "bored,frown, ;(, :<,"
+  ],
+  " 自信照れ顔": [
+    "confident,doyagao,smug,nose blush,embarrassed,"
+  ],
+  "自信照れ顔(anger)": [
+    "anger vein,annoyed,confident,doyagao,smug,nose blush,embarrassed,"
+  ],
+  "睨んでる": [
+    "(anger_vein:1.15) ,glaring,nose blush,embarrassed,(shaded face:0.9),"
+  ],
+  "にらみつける": [
+    "shaded face,glaring, "
+  ],
+  "ねる": [
+    "sleeping,closed eyes,"
+  ],
+  "笑い泣き": [
+    "teardrop,laughing,"
+  ],
+  "怖がってる": [
+    "gloom (expression)"
+  ],
+  "ぷくー ": [
+    "pout,"
+  ],
+  "ほんのり疑う": [
+    "unamused,raised eyebrow,"
+  ]
+}

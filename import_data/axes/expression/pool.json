@@ -1,0 +1,78 @@
+{
+  "_note": {
+    "purpose": "表情の組み合わせ探索用の単語プール。良い組み合わせが見つかったら、Obsidianの「お顔のプロンプト.md」に手動で記録する運用。",
+    "structure": "2層構造。「shape」は目・眉・口・涙・汗・血色・記号などパーツの物理的形状/状態を表し、どの感情とも自由に組み合わせられる補助タグ群。「emotion」は感情・心理状態を表すラベル群で、25カテゴリに整理。GUI/コードは両方をまとめて1つのフラットな辞書として扱う（キーはカテゴリ名、値は単語リスト）。",
+    "source": "Danbooru tag_group:face_tags / tears / disgust / lovestruck / relief (expression) 等のwikiページ + 既存メモ（お顔のプロンプト.md）からの単語を合流。2026-08にカテゴリ分類を『パーツ形状』と『感情ラベル(25種)』の2層構造へ全面再設計。",
+    "note": "Danbooruのスペース区切りタグはComfyUI側でアンダースコアではなく半角スペース表記で使用可（例: nose blush）。括弧を含むタグ（gloom (expression) など）はプロンプトに入れる際バックスラッシュエスケープが必要な場合あり。Emoticons系（:d, ;) など）は記号のみのタグなのでComfyUI側でエスケープや区切りカンマの扱いに注意（例: \":d,\" のように直後にカンマを置くと解釈が崩れることがあるため、単体で置くか前後にスペースを挟むのが無難）。相性の良し悪し（同時使用でNG/GOODな組み合わせ）は意図的にこのプールへは反映していない（暫定的な思い込みで固定化しないため）。"
+  },
+  "emo_01_happiness": ["happy", "happy tears", "grin", "light smile"],
+  "emo_02_affection": [
+    "heart-shaped pupils",
+    "lovestruck",
+    "loving aura",
+    "come hither"
+  ],
+  "emo_03_amusement": ["laughing", "excited"],
+  "emo_04_arousal_high": ["ecstasy"],
+  "emo_05_relief": ["relief (expression)"],
+  "emo_06_calm": ["serious"],
+  "emo_07_confidence_pride": ["confident", "doyagao"],
+  "emo_08_smug_superiority": ["smug", "smirk", "evil smile"],
+  "emo_09_curiosity": ["thinking"],
+  "emo_10_focus_determination": ["determined"],
+  "emo_11_sadness": [
+    "sad",
+    "disappointed",
+    "lonely",
+    "sad smile",
+    "crying",
+    "sobbing",
+    "fake tears"
+  ],
+  "emo_12_regret_guilt": [],
+  "emo_13_anger": [
+    "angry",
+    "anger vein",
+    "glaring",
+    "shaded face",
+    "crazy smile"
+  ],
+  "emo_14_irritation": [
+    "annoyed",
+    "grimace",
+    "pout",
+    "nervous sweating",
+    "frustrated",
+    "sulking",
+    "forced smile"
+  ],
+  "emo_15_disgust_contempt": ["unamused", "disdain", "disgust"],
+  "emo_16_fear_anxiety": [
+    "scared",
+    "gloom (expression)",
+    "distress",
+    "partially shaded face"
+  ],
+  "emo_17_surprise_shock": ["surprised"],
+  "emo_18_confusion": ["confused"],
+  "emo_19_suspicion_wariness": ["skeptical"],
+  "emo_20_jealousy_envy": ["envy"],
+  "emo_21_shyness_embarrassment": [
+    "shy",
+    "embarrassed",
+    "flustered",
+    "averting eyes",
+    "nervous"
+  ],
+  "emo_22_indifference_blank": ["bored", "expressionless", "blank stare"],
+  "emo_23_fatigue_sleepiness": ["sleepy", "exhausted", "drunk"],
+  "emo_24_desire_sexual": [
+    "aroused",
+    "in heat",
+    "fucked silly",
+    "drooling",
+    "rolling eyes",
+    "seductive smile"
+  ],
+  "emo_25_despair_helplessness": ["despair", "wince", "pain"]
+}
