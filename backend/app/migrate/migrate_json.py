@@ -53,6 +53,9 @@ def ensure_pool(db: Session, key: str, display_name: str, sort_order: int):
         pool = models.Pool(key=key, display_name=display_name, sort_order=sort_order)
         db.add(pool)
         db.flush()
+    else:
+        pool.display_name = display_name
+        pool.sort_order = sort_order
     return pool
 
 
@@ -128,7 +131,7 @@ def entry_diff(item: models.Item, entry: dict) -> list[str]:
 def migrate_character(db: Session):
     pool_key = "character"
     pool_dir = AXES_DIR / pool_key
-    ensure_pool(db, pool_key, "Character (キャラ)", 1)
+    ensure_pool(db, pool_key, "02_キャラクター", 2)
 
     master = load_json(pool_dir / "pool.json")
     note = master.pop("_note", None)
@@ -204,6 +207,48 @@ def migrate_wordbank_master(db: Session, pool_key: str, display_name: str, sort_
     return total
 
 
+def migrate_labeled_wordbank(db: Session, pool_key: str, display_name: str, sort_order: int) -> int:
+    """カテゴリ -> {日本語ラベル: Danbooruタグ文字列} 形式のpool.jsonをpartとして取り込む。
+
+    migrate_wordbank_masterと違い、name(ラベル)とpositive(タグ)が別物のプール用
+    (演出構図・服装・背景など、今後同形式で追加するpool全般で使う汎用関数)。
+    pool.jsonがまだ無いプールでもensure_poolだけは呼び、プールの登録/リネームは行う。
+    """
+    pool_dir = AXES_DIR / pool_key
+    ensure_pool(db, pool_key, display_name, sort_order)
+
+    pool_json = pool_dir / "pool.json"
+    if not pool_json.exists():
+        return 0
+
+    master = load_json(pool_json)
+    note = master.pop("_note", None)
+    if note:
+        save_pool_config(db, pool_key, "pool.json:_note", note)
+
+    total = 0
+    for category, entries in master.items():
+        if category.startswith("_"):
+            continue
+        group = ensure_group(db, pool_key, category)
+        for label, tag_text in entries.items():
+            item = get_item(db, pool_key, label)
+            if item is None:
+                item = models.Item(pool=pool_key, type="part", name=label, positive=tag_text, negative="")
+                db.add(item)
+                db.flush()
+                db.add(models.ItemVariant(item_id=item.id, variant_text=tag_text, sort_order=0))
+            else:
+                item.positive = tag_text
+                if item.variants:
+                    item.variants[0].variant_text = tag_text
+            db.flush()
+            link_item_group(db, item, group)
+            total += 1
+    log(f"[{pool_key}] pool.json からカテゴリ {sum(1 for c in master if not c.startswith('_'))} 件・part {total} 件(重複含む)を登録")
+    return total
+
+
 def migrate_composition_subset(db: Session):
     """composition/pools/自作構図.json: 同じカテゴリ配列形式の複数カテゴリ横断サブセット。"""
     pool_key = "composition"
@@ -273,10 +318,19 @@ def main():
             log(f"axesディレクトリが見つかりません: {AXES_DIR}")
             return
         migrate_character(db)
-        migrate_wordbank_master(db, "expression", "Expression (表情)", 2)
+        migrate_wordbank_master(db, "expression", "04_表情", 4)
         migrate_expression_finished(db)
         migrate_wordbank_master(db, "composition", "Composition (構図)", 3)
         migrate_composition_subset(db)
+
+        migrate_labeled_wordbank(db, "headcount", "01_人数", 1)
+        migrate_labeled_wordbank(db, "outfit", "03_服装", 3)
+        migrate_labeled_wordbank(db, "restraint", "05_拘束方法", 5)
+        migrate_labeled_wordbank(db, "staging", "06_演出構図", 6)
+        migrate_labeled_wordbank(db, "background", "07_背景", 7)
+        migrate_labeled_wordbank(db, "accessory", "08_小物", 8)
+        migrate_labeled_wordbank(db, "bodytype", "体型", 103)
+
         db.commit()
         log("移行完了")
     except Exception:

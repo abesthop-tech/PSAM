@@ -1,0 +1,138 @@
+{
+  "_note": "Danbooruタグ基準で整理した背景・シチュエーション・演出タグ集",
+  "シンプル・抽象": {
+    "白背景（立ち絵風）": "simple background, white background",
+    "黒背景（ダーク・陰影強調）": "simple background, black background",
+    "単色・フラット": "simple background, solid color background",
+    "グラデーション・抽象": "gradient background, abstract background",
+    "ぼかし・被写界深度": "depth of field, blurry background, bokeh"
+  },
+  "日常・屋内": {
+    "寝室・ベッド": "indoors, bedroom, bed, pillow, bed sheet",
+    "散らかった部屋": "indoors, messy room, clutter, floor",
+    "PCデスク・ゲーミング部屋": "indoors, desk, computer, multiple monitors, gaming chair",
+    "リビング・ソファ": "indoors, living room, couch, coffee table",
+    "キッチン・台所": "indoors, kitchen, counter, sink, refrigerator",
+    "お風呂・シャワー": "indoors, bathroom, bathtub, shower, steam, wet",
+    "洗面所・鏡の前": "indoors, bathroom, sink, mirror, reflection",
+    "和室・畳": "indoors, washitsu, tatami, shoji, sliding doors, kotatsu",
+    "ベランダ・バルコニー": "balcony, railing, outdoors, patio"
+  },
+  "学校・施設": {
+    "教室（昼・放課後）": "classroom, desk, chair, chalkboard, window, indoors",
+    "教室の窓際（光・風）": "classroom, window, curtains, sunlight, desk",
+    "学校の廊下": "school hallway, lockers, windows, wooden floor",
+    "学校の屋上": "school rooftop, chain-link fence, railing, blue sky, outdoors",
+    "図書室・本棚": "library, bookshelf, books, study desk, indoors",
+    "保健室・医務室": "school infirmary, clinic, medical bed, curtain",
+    "体育館・部室": "gymnasium, wooden floor, basketball hoop",
+    "下駄箱・昇降口": "getabako, shoe locker, school entrance, indoors"
+  },
+  "都市・街並み": {
+    "繁華街・昼の街並み": "city, cityscape, street, sidewalk, buildings, pedestrians",
+    "夜の街・ネオン街": "night, city, neon lights, illuminated, skyscraper, reflection",
+    "裏路地・アングラ": "alley, brick wall, trash can, puddle",
+    "駅のホーム・線路": "train station, train platform, tracks, bench",
+    "電車・地下鉄車内": "train interior, subway, passenger car, seats, handrail",
+    "カフェ・喫茶店": "cafe, restaurant, table, chair, coffee cup, indoors",
+    "コンビニ": "convenience store, shelves, fluorescent light, glass door",
+    "横断歩道・歩道橋": "crosswalk, traffic light, pedestrian bridge, road",
+    "水族館（青・幻想）": "aquarium, fish tank, underwater, deep blue",
+    "ゲームセンター": "arcade, arcade game, neon lights, indoors",
+    "公園・ベンチ": "park, park bench, trees, street lamp, path"
+  },
+  "自然・風景": {
+    "森・林（木漏れ日）": "forest, woods, trees, foliage, sunlight through trees",
+    "草原・平原": "field, meadow, grass, open sky, clouds",
+    "花畑・ひまわり畑": "flower field, sunflower, open sky, colorful",
+    "ビーチ・海辺": "beach, ocean, sea, sand, waves, blue sky",
+    "水中・深海": "underwater, floating, bubbles, coral, sea life",
+    "山・崖・見晴らし": "mountain, cliff, peak, rocks, overlooking",
+    "川辺・湖・水面": "river, riverbank, lake, water surface, reflection",
+    "雪原・雪景色": "snow, winter, snowfield, frosted trees",
+    "星空・銀河・宇宙": "space, outer space, starry sky, stars, milky way, nebula"
+  },
+  "世界観・ファンタジー": {
+    "神社・鳥居（和風）": "shrine, torii, stone lantern, stone stairs, sacred tree",
+    "夏祭り・夜店": "festival, night, paper lantern, stalls, crowd",
+    "古城・玉座の間": "castle, throne room, throne, pillar, chandelier, red carpet",
+    "ゴシック聖堂・教会": "cathedral, church, stained glass, arch, altar, candles",
+    "ダンジョン・牢獄": "dungeon, prison, stone wall, torch, iron bars, chains",
+    "遺跡・崩壊都市": "ruins, overgrown, moss, abandoned building, debris",
+    "SF・宇宙船・研究室": "sci-fi, futuristic, spaceship interior, laboratory, monitor, cables",
+    "荒野・戦場・瓦礫": "wasteland, battlefield, smoke, rubble, fire",
+    "墓地・霊園": "graveyard, cemetery, gravestone, cross, mist"
+  },
+  "天候・照明": {
+    "快晴・青空": "day, sunny, blue sky, cloud, clear sky",
+    "夕暮れ・黄昏時": "sunset, twilight, golden hour, orange sky, long shadows",
+    "夜・月夜": "night, moon, full moon, crescent moon, starry sky",
+    "雨・水たまり": "rain, raining, wet, puddle, ripples, umbrella",
+    "花火（夜空）": "night sky, fireworks, colorful lights, celebration",
+    "濃霧・朝霧": "fog, mist, hazy, atmospheric",
+    "逆光・シルエット": "backlighting, rim light, silhouette, lens flare",
+    "木漏れ日・薄明光線": "sunbeams, sunlight through trees, light rays, tyndall effect",
+    "薄暗い部屋・シネマティック": "dimly lit, dark room, dramatic shadows, chiaroscuro, cinematic lighting"
+  },
+  "モチーフ柄": {
+    "ハート柄": "heart background, floating hearts",
+    "星柄・ポップ": "star background, star pattern, colorful",
+    "花柄・フローラル": "floral background, flower pattern",
+    "蝶の舞": "butterfly background, butterflies",
+    "スカル・ゴシック": "skull background, skull pattern, gothic",
+    "音符・リズム": "musical note background, floating notes",
+    "トランプ柄": "playing cards, card background, spade, club"
+  },
+  "幾何学・パターン": {
+    "水玉模様（ドット）": "polka dot background, spotted pattern",
+    "ストライプ・縞模様": "striped background, vertical stripes",
+    "チェッカー柄・市松模様": "checkered background, checkerboard",
+    "タータンチェック": "plaid background, tartan background",
+    "千鳥格子": "houndstooth background",
+    "幾何学模様": "geometric background, geometric shapes",
+    "ハーフトーン・網点": "halftone background, dot pattern",
+    "サンバースト・放射状": "sunburst background, radiating lines",
+    "レース模様": "lace background, lace trim"
+  },
+  "フレーム・レイアウト": {
+    "装飾額縁・枠線": "ornate frame, decorative border, framed",
+    "円形フレーム": "circular frame, circle background, solid circle, ensou",
+    "カード・タロット風": "tarot card, playing card, card frame, bordered",
+    "チェキ・インスタント写真": "polaroid, photo frame, white border",
+    "雑誌表紙・ポスター風": "magazine cover, mock cover, typography, text",
+    "漫画コマ割り・吹き出し": "comic, manga page, panels, speech bubble",
+    "画面分割・ツートン": "split background, two-tone background, contrasting colors"
+  },
+  "トーン・色彩": {
+    "パステル・ふんわり": "pastel colors, soft lighting, simple background",
+    "周辺減光（ビネット）": "vignette, dark edges, character focus",
+    "パートカラー（1色強調）": "spot color, monochrome with colored...",
+    "ペンキスプラッシュ": "paint splatter, color splash, ink splatters",
+    "レトロ・ヴェイパーウェイヴ": "vaporwave, synthwave, retro artstyle, 1980s",
+    "サイバー・グリッチ": "glitch, chromatic aberration, scanlines, digital noise"
+  },
+  "エフェクト・パーティクル": {
+    "花びらの舞": "falling petals, cherry blossoms, floating petals",
+    "羽根の浮遊": "floating feathers, single feather",
+    "光の粒子・キラキラ": "sparkles, light particles, glowing, floating dust",
+    "シャボン玉・気泡": "floating bubbles, soap bubbles",
+    "火の粉・火花": "fire embers, sparks, floating sparks",
+    "集中線・スピード線": "speed lines, focus lines, impact lines, action lines"
+  },
+  "センシティブ（空間）": {
+    "ラブホテル": "love hotel, dim lighting, mood lighting, bed, mirror",
+    "監禁部屋・地下牢": "dark room, concrete wall, chains, ropes, cage, tied up",
+    "更衣室・ロッカールーム": "changing room, locker room, lockers, bench, curtain",
+    "公衆トイレ個室": "public restroom, toilet stall, bathroom stall, tile wall",
+    "温泉・露天風呂": "onsen, hot spring, outdoor bath, steam, rocks",
+    "ナイトプール・プールサイド": "poolside, swimming pool, night, pool ladder, water reflection",
+    "診察室・診察台": "examination room, medical bed, medical equipment, hospital curtains"
+  },
+  "センシティブ（演出）": {
+    "ピンクネオン・甘美": "pink lighting, pink glow, heart bokeh, mood lighting",
+    "薄暗い赤照明・怪奇": "dim red lighting, dark room, dramatic shadow",
+    "光沢サテンシーツ・乱れ": "satin sheets, glossy sheets, messy bed, disheveled sheets",
+    "万華鏡・催眠": "kaleidoscope background, hypnotic, psychedelic",
+    "合わせ鏡・無限反射": "infinity mirror, multiple reflections, mirror reflection"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "_note": "AIイラストにおける人数・キャラクター構成指定タグ一覧",
+  "1人（単体）": {
+    "女性1人（増殖防止の基本）": "1girl, solo",
+    "男性1人（増殖防止の基本）": "1boy, solo",
+    "性別不問・人外などの1人": "solo",
+    "メイン1人＋背景にモブ・群衆": "1girl, solo focus, background crowd"
+  },
+  "2人組（ペア・カップル）": {
+    "女性2人": "2girls, duo",
+    "男性2人": "2boys, duo",
+    "男女ペア": "1boy, 1girl, duo",
+    "男女カップル": "1boy, 1girl, couple",
+    "女性同士（百合）": "2girls, yuri, girls only",
+    "男性同士（BL）": "2boys, yaoi, boys only"
+  },
+  "3人以上（グループ・大人数）": {
+    "女性3人": "3girls, trio",
+    "男性3人": "3boys, trio",
+    "女性グループ（4人以上）": "multiple girls, group",
+    "男性グループ（4人以上）": "multiple boys, group",
+    "男女混合グループ": "group, multiple boys, multiple girls",
+    "ハーレム（男性1人＋女性多数）": "1boy, multiple girls, harem",
+    "大人数・群衆": "crowd, audience"
+  },
+  "その他・制御用": {
+    "人物なし（背景・静物のみ）": "no humans",
+    "1人固定用のネガティブ（参考）": "2girls, 2boys, multiple girls, multiple boys, duo, group, extra people"
+  }
+}

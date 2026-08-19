@@ -1,0 +1,85 @@
+{
+  "_note": "Danbooruタグ準拠・AI画像生成用拘束プロンプト決定版。括弧干渉を排除し、構図・質感・シチュエーションを網羅しています。",
+  "縄縛り・基本": {
+    "全体的な縄拘束（基本）": "rope bondage, bound, tied up",
+    "亀甲縛り（胴体の格子状縛り）": "kikkou, tortoiseshell bondage, rope bondage",
+    "胸縛り・ハーネス": "rope harness, chest harness, rope bondage",
+    "高手小手（後手二の腕固定）": "takate kote, box tie, arms tied behind back",
+    "股縄（股間を通す縄縛り）": "crotch rope, rope bondage",
+    "宙吊り拘束（サスペンション）": "suspension, suspended, rope bondage",
+    "逆さ吊り拘束": "suspended upside-down, suspension, rope bondage",
+    "海老責め（後ろ手と両足を連結）": "hogtie, bound wrists, bound ankles",
+    "蛙縛り（開脚状態で両足を固定）": "frogtie, spread legs, bound ankles",
+    "ミイラ巻き・包帯拘束": "mummification, wrapped in bandages, bound"
+  },
+  "拘束体勢・ポーズ": {
+    "頭上縛り・万歳拘束": "arms up, arms tied above head, suspended",
+    "後ろ手縛り": "arms behind back, bound wrists, tied up",
+    "前手縛り": "arms in front, bound wrists",
+    "肘縛り・腕固定": "elbow bondage, arms behind back",
+    "両足首拘束": "bound ankles",
+    "両脚密着拘束（膝・太もも）": "bound legs, bound thighs, bound knees",
+    "正座・膝立ち拘束": "kneeling, bound wrists, arms behind back",
+    "四つん這い拘束": "all fours, crawling, bound wrists, bound ankles",
+    "うつ伏せ拘束": "lying on stomach, prone, bound wrists, bound ankles",
+    "仰向け拘束": "lying on back, supine, bound wrists, bound ankles",
+    "大の字拘束（開帳固定）": "spread eagle, bound wrists, bound ankles",
+    "椅子縛り（着座固定）": "tied to chair, sitting, bound wrists",
+    "柱・木・十字架縛り（磔）": "tied to pole, tied to tree, tied to cross, crucifixion",
+    "壁・ベッド固定": "chained to wall, tied to bed, spread eagle"
+  },
+  "拘束具・器具": {
+    "手錠（金属製）": "handcuffs, bound wrists",
+    "足枷（金属製）": "shackles, bound ankles",
+    "鎖拘束（全身・複数箇所）": "chains, chained, chained wrists",
+    "首輪とリード": "collar, leash, holding leash",
+    "首枷・手枷（木製ギロチン型）": "pillory, stocks",
+    "聖アンドレイ十字（X字磔台）": "st. andrew's cross, x-cross, spread eagle",
+    "拷問台・拘束台": "bondage rack, torture table, strapped down",
+    "開脚バー（脚固定器具）": "spreader bar, bound ankles, spread legs",
+    "拘束衣（ストレートジャケット）": "straitjacket, arms bound",
+    "拘束ミトン（手袋拘束）": "bondage mittens, mittens, bound hands",
+    "拘束スーツ（ラバー・レザー）": "bondage suit, latex bondage, leather bondage",
+    "三角木馬（跨ぎ固定器具）": "wooden horse, straddling, rope bondage",
+    "檻・牢屋・監禁": "cage, prison cell, bars, imprisoned",
+    "アイアンメイデン（鉄の処女）": "iron maiden, trapped"
+  },
+  "口枷・頭部・感覚遮断": {
+    "ボールギャグ（球状口枷）": "ball gag, open mouth",
+    "リングギャグ（開口具・穴あき）": "ring gag, open mouth, drooling",
+    "ビットギャグ（ハミ風）": "bit gag, leather straps",
+    "テープギャグ（ガムテープ留め）": "tape gag, tape over mouth, duct tape",
+    "布ギャグ・猿ぐつわ": "cloth gag, cleave gag, stuffed gag",
+    "ディルドギャグ（挿入式口枷）": "dildo gag, open mouth, drooling",
+    "ポンプギャグ（空気膨張式）": "pump gag, inflatable gag",
+    "口輪（レザーマズル）": "leather muzzle, muzzle, straps",
+    "拘束フード・マスク": "bondage hood, leather hood, blindfold",
+    "目隠し（布・アイマスク）": "blindfold, blindfolded",
+    "感覚遮断・ヘッドホン": "sensory deprivation, blindfold, headphones"
+  },
+  "特殊・異種・素材拘束": {
+    "触手拘束": "tentacles, tentacle bondage, wrapped tentacles",
+    "スライム拘束（粘液拘束）": "slime, slime bondage, covered in slime",
+    "蜘蛛の巣拘束（繭化）": "spider web, webbing, web cocoon",
+    "魔法・エネルギー拘束（光の帯）": "magic bonds, energy rope, glowing ropes",
+    "植物・ツタ拘束": "vines, plant bondage, wrapped in vines",
+    "ガムテープ・ビニール拘束": "duct tape bondage, plastic wrap, tape bondage",
+    "バキュームベッド拘束": "vacuum bed, latex, encased",
+    "石化・氷漬け固定": "petrification, encased in ice, frozen"
+  },
+  "質感・肉体描写": {
+    "縄・器具の食い込み": "skin indentation, tight ropes, tight bondage",
+    "縄跡・締め付け跡・赤み": "rope marks, binding marks, red marks",
+    "よだれ（垂れ・糸引き）": "drooling, saliva trail, open mouth",
+    "汗・荒い息": "sweat, heavy breathing, panting",
+    "服の破れ・着崩れ": "torn clothes, ripped shirt, ragged clothes"
+  },
+  "表情・シチュエーション": {
+    "もがき・抵抗": "struggling, squirming, strained",
+    "睨み・反抗的な目": "glaring, angry, clenching teeth",
+    "涙・悔し泣き": "tears, crying, teary eyes",
+    "顔の紅潮・恥じらい": "blush, embarrassed, flushed face",
+    "屈辱・敗北・捕虜": "humiliated, captive, captured, defeated",
+    "疲弊・ぐったり・脱力": "exhausted, limp, faint, unconscious"
+  }
+}

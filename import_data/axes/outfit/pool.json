@@ -1,0 +1,110 @@
+{
+  "_note": "Danbooru正規タグ準拠の服装・衣装プロンプト集です。AI生成時の再現性を高める推奨タグをセットにしています。",
+
+  "カジュアル": {
+    "Tシャツ＆ジーンズ": "t-shirt, jeans, belt, sneakers",
+    "オーバーサイズシャツ（萌え袖）": "oversized shirt, baggy shirt, long sleeves, bare thighs",
+    "クロップド丈トップス（へそ出し）": "crop top, bare midriff, navel, denim shorts",
+    "オフショルダーニット": "off-shoulder sweater, bare shoulders, collarbone",
+    "タートルネックセーター": "turtleneck sweater, ribbed sweater, long sleeves",
+    "童貞を殺すセーター": "virgin killer sweater, backless sweater, open back, sideboob",
+    "ノースリーブタートルネック": "sleeveless turtleneck, bare shoulders, ribbed sweater",
+    "パーカー＆ショートパンツ": "hoodie, hooded jacket, drawstring, short shorts, bare legs",
+    "パーカーワンピース": "hoodie dress, oversized hoodie, bare legs, thighhighs",
+    "キャミソール＆デニム": "camisole, spaghetti straps, denim shorts, bare shoulders",
+    "カーディガン＆プリーツスカート": "cardigan, collared shirt, pleated skirt, loafers",
+    "レザージャケット＆スキニー": "leather jacket, black pants, tight pants, high heel boots",
+    "オーバーオール・サロペット": "overalls, denim overalls, straps, t-shirt underneath"
+  },
+
+  "学園・制服": {
+    "セーラー服（王道クラシック）": "sailor uniform, serafuku, sailor collar, pleated skirt, neckerchief",
+    "ブレザー制服": "school blazer, collared shirt, necktie, pleated skirt, loafers",
+    "カーディガン制服（JKスタイル）": "school uniform, cardigan, collared shirt, loose socks, plaid skirt",
+    "セーターベスト制服": "school uniform, sweater vest, collared shirt, necktie, pleated skirt",
+    "体操着・ブルマ": "gym uniform, gym shirt, buruma, bloomers, bare legs",
+    "ジャージ体操着": "track jacket, track pants, school gym uniform, sneakers",
+    "旧型スクール水着（紺・ワンピース）": "school swimsuit, old school swimsuit, navy blue one-piece swimsuit",
+    "新型スクール水着（パイピング・セパレート）": "new school swimsuit, piping, racerback swimwear"
+  },
+
+  "職業・コスチューム": {
+    "クラシックメイド服（ロング丈）": "maid, victorian maid, long dress, white apron, maid headdress, frills",
+    "フレンチメイド服（ミニ丈）": "maid, mini maid dress, white apron, maid headdress, thighhighs, garter straps",
+    "ナース服": "nurse, nurse cap, nurse dress, stethoscope, white thighhighs",
+    "バニーガール": "bunny suit, playboy bunny, bunny ears, bow tie, leotard, fishnet pantyhose, fake tail",
+    "シスター・修道女": "nun, nun veil, habit, pectoral cross, religious clothing, long dress",
+    "警察官・ポリス": "police uniform, police hat, buttoned shirt, necktie, pencil skirt, badge",
+    "ミリタリー・軍服": "military uniform, peaked cap, double-breasted jacket, epaulettes, combat boots",
+    "チアリーダー": "cheerleader, cheerleading uniform, sleeveless crop top, pleated miniskirt, pom poms",
+    "ウェイトレス": "waitress, collared shirt, vest, waist apron, bow tie",
+    "甲冑・女騎士": "armor, breastplate, pauldrons, gauntlets, greaves, sword",
+    "魔女・魔法使い": "witch, witch hat, robe, cloak, magic staff"
+  },
+
+  "和装・民族衣装": {
+    "着物（フォーマル）": "kimono, obi, sash, wide sleeves, floral print, geta",
+    "浴衣（夏祭り）": "yukata, obi, sash, wooden clogs, hair flower, kanzashi",
+    "巫女服": "miko, priestess, white kosode, red hakama, wide sleeves",
+    "くノ一・忍者": "kunoichi, ninja, scarf, sleeveless top, fishnet, thigh wraps",
+    "チャイナドレス": "china dress, cheongsam, mandarin collar, side slit, form-fitting",
+    "韓服・チマチョゴリ": "hanbok, jeogori, chima, high-waist skirt, ribbon",
+    "ベリーダンス衣装・アラビアン": "belly dancer, harem outfit, midriff, harem pants, veil, jewelry, gold trim"
+  },
+
+  "ドレス・礼服": {
+    "イブニングドレス": "evening gown, backless dress, plunging neckline, bare shoulders, long dress, elegant",
+    "カクテルドレス": "cocktail dress, sleeveless dress, knee-length, jewelry, high heels",
+    "ゴシックロリータ": "gothic lolita, frills, lace trim, bonnet, layered skirt, dark theme",
+    "クラシックロリータ": "classic lolita, elegant dress, bonnet, lace-trimmed dress, modest",
+    "ウェディングドレス": "wedding dress, bridal veil, white lace gown, train, bouquet, tiara",
+    "レディーススーツ": "business suit, blazer, pencil skirt, collared dress shirt, high heels"
+  },
+
+  "水着・部屋着": {
+    "ビキニ（定番セパレート）": "bikini, two-piece swimsuit, halterneck bikini, bikini bottom",
+    "マイクロビキニ": "micro bikini, string bikini, tiny top, side-tie bikini bottom",
+    "チューブトップビキニ": "bandeau bikini, strapless bikini, bare shoulders",
+    "モノキニ（ワンピースカットアウト）": "monokini, cutout swimsuit, stomach cutout, plunging neckline",
+    "スリングショット水着": "slingshot swimsuit, highleg, narrow straps, revealing",
+    "ベビードール・ネグリジェ": "babydoll, nightgown, sheer, see-through, frills, spaghetti straps",
+    "シルクパジャマ": "silk pajamas, satin, buttoned sleepwear, long pants",
+    "キャミソール＆ショーツ": "camisole, panties, sleepwear, bare stomach, loungewear",
+    "スポーツブラ＆スパッツ": "sports bra, spats, bike shorts, midriff, athletic wear"
+  },
+
+  "下着・フェチ衣装": {
+    "裸エプロン": "naked apron, bare shoulders, bare back, sideboob, solo focus",
+    "ラバースーツ・キャットスーツ": "latex bodysuit, rubber bodysuit, catsuit, skintight, glossy",
+    "レザーハーネス・ボンデージ": "leather harness, bondage, belt straps, buckles, open chest",
+    "ハイレグレオタード": "highleg leotard, highleg, form-fitting, bare hips",
+    "オープンカップブラ＆ショーツ": "cupless bra, cutout bra, crotchless panties, breasts out",
+    "ガーターベルト＆ストッキング": "garter straps, garter belt, thighhighs, stockings",
+    "フィッシュネットボディスーツ": "fishnet bodysuit, fishnet pantyhose, mesh, see-through",
+    "コルセット・ビスチェ": "corset, bustier, lace trim, cleavage, cinched waist",
+    "サキュバス衣装": "succubus, demon horns, bat wings, cutout dress, heart cutout, tail"
+  },
+
+  "着崩し・状態変化": {
+    "はだけたシャツ": "open shirt, unbuttoned shirt, off-shoulder, bra visible, bare shoulders",
+    "服の透け（シースルー）": "see-through, sheer, see-through silhouette, visible underwear",
+    "濡れ透け": "wet clothes, wet shirt, translucent shirt, soaked, see-through silhouette",
+    "スカートめくり・パンチラ": "skirt lift, skirt flip, pantyshot, panties visible",
+    "胸のボタン弾け・パツパツ": "popping button, clothes strain, bursting clothes, tight shirt",
+    "たくし上げ（お腹・下着見せ）": "shirt lift, bare stomach, navel, bra visible",
+    "ストッキングの破れ・伝線": "torn pantyhose, torn thighhighs, damaged clothing",
+    "肩紐ずり落ち": "strap slip, bra strap slip, off-shoulder",
+    "ズボン・下着のずり下げ": "pants down, panties pull, underwear pull, partially undressed",
+    "ジッパー開き": "open zipper, unzipped, zipper pull, cleavage"
+  },
+
+  "素材・装飾": {
+    "光沢レザー・エナメル": "glossy, patent leather, shiny, reflective",
+    "シフォン・レース": "chiffon, lace, lace trim, sheer",
+    "リブニット": "ribbed fabric, ribbed sweater, knit",
+    "フリル・多層レイヤー": "frills, ruffles, layered skirt, tiered dress",
+    "チェック柄・タータン": "plaid, tartan, checkered",
+    "ピンストライプ": "pinstripes, striped suit, vertical stripes",
+    "下着の浮き・透け線": "pantylines, bra outline, tight clothing"
+  }
+}
