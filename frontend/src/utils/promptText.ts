@@ -1,8 +1,16 @@
-export function appendSegment(existing: string, segment: string): { text: string; inserted: string } {
+export function appendSegment(
+  existing: string,
+  segment: string,
+  opts?: { newParagraph?: boolean },
+): { text: string; inserted: string } {
   const seg = segment.trim()
   if (!seg) return { text: existing, inserted: '' }
   const trimmed = existing.trimEnd()
   if (!trimmed) return { text: seg, inserted: seg }
+  if (opts?.newParagraph) {
+    const insertedPiece = '\n\n' + seg
+    return { text: trimmed + insertedPiece, inserted: insertedPiece }
+  }
   const needsComma = !trimmed.endsWith(',')
   const insertedPiece = (needsComma ? ', ' : ' ') + seg
   return { text: trimmed + insertedPiece, inserted: insertedPiece }
@@ -12,9 +20,13 @@ export function removeSegment(existing: string, inserted: string): string {
   if (!inserted || !existing.includes(inserted)) return existing
   return existing
     .replace(inserted, '')
+    .replace(/,?[ \t]*\n[ \t]*\n[ \t]*,?/g, '\n\n')
     .replace(/,\s*,/g, ',')
     .replace(/^\s*,\s*/, '')
-    .replace(/\s{2,}/g, ' ')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/^\n+/, '')
+    .replace(/\n+$/, '')
     .trim()
 }
 

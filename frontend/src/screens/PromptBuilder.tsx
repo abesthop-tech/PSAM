@@ -28,7 +28,11 @@ interface Snapshot {
   positive: string
   negative: string
   linkIdsByItem: Record<number, number[]>
+  lastPosGroup: string | null
+  lastNegGroup: string | null
 }
+
+const NEGATIVE_GROUP = '__negative__'
 
 export default function PromptBuilder() {
   const [pools, setPools] = useState<Pool[]>([])
@@ -49,6 +53,8 @@ export default function PromptBuilder() {
   const [negative, setNegative] = useState('')
   const [linkedInfo, setLinkedInfo] = useState<Record<number, Item>>({})
   const [linkIdsByItem, setLinkIdsByItem] = useState<Record<number, number[]>>({})
+  const [lastPosGroup, setLastPosGroup] = useState<string | null>(null)
+  const [lastNegGroup, setLastNegGroup] = useState<string | null>(null)
 
   const [leftWidth, setLeftWidth] = useState(256)
   const [rightWidth, setRightWidth] = useState(320)
@@ -56,7 +62,7 @@ export default function PromptBuilder() {
   const historyRef = useRef<Snapshot[]>([])
 
   function pushHistory() {
-    historyRef.current.push({ entries, positive, negative, linkIdsByItem })
+    historyRef.current.push({ entries, positive, negative, linkIdsByItem, lastPosGroup, lastNegGroup })
     if (historyRef.current.length > 50) historyRef.current.shift()
   }
 
@@ -67,6 +73,8 @@ export default function PromptBuilder() {
     setPositive(snap.positive)
     setNegative(snap.negative)
     setLinkIdsByItem(snap.linkIdsByItem)
+    setLastPosGroup(snap.lastPosGroup)
+    setLastNegGroup(snap.lastNegGroup)
   }
 
   useEffect(() => {
@@ -114,6 +122,13 @@ export default function PromptBuilder() {
   }, [selectedPool, selectedGroupId, showUngrouped, typeFilter, debouncedItemSearch])
 
   const addedIds = useMemo(() => new Set(entries.map((e) => e.item.id)), [entries])
+  const poolIndex = useMemo(() => pools.findIndex((p) => p.key === selectedPool), [pools, selectedPool])
+
+  function goToPool(offset: number) {
+    const next = poolIndex + offset
+    if (next < 0 || next >= pools.length) return
+    setSelectedPool(pools[next].key)
+  }
 
   async function addItem(item: Item) {
     if (addedIds.has(item.id)) return
@@ -124,9 +139,10 @@ export default function PromptBuilder() {
     let newPositive = positive
     let insertedPositive = ''
     if (variantText.trim()) {
-      const r = appendSegment(newPositive, variantText)
+      const r = appendSegment(newPositive, variantText, { newParagraph: lastPosGroup !== item.pool })
       newPositive = r.text
       insertedPositive = r.inserted
+      setLastPosGroup(item.pool)
     }
 
     let loraModel: number | null = null
@@ -140,9 +156,10 @@ export default function PromptBuilder() {
     let newNegative = negative
     let insertedNegative = ''
     if (item.negative.trim()) {
-      const r = appendSegment(newNegative, item.negative)
+      const r = appendSegment(newNegative, item.negative, { newParagraph: lastNegGroup !== item.pool })
       newNegative = r.text
       insertedNegative = r.inserted
+      setLastNegGroup(item.pool)
     }
 
     setPositive(newPositive)
@@ -200,8 +217,9 @@ export default function PromptBuilder() {
       if (nextIndex === entry.variantIndex || nextIndex < 0 || nextIndex >= variants.length) return prev
       const nextText = variants[nextIndex].variant_text
       const removed = removeSegment(positive, entry.insertedPositive)
-      const { text, inserted } = appendSegment(removed, nextText)
+      const { text, inserted } = appendSegment(removed, nextText, { newParagraph: lastPosGroup !== entry.item.pool })
       setPositive(text)
+      setLastPosGroup(entry.item.pool)
       const next = [...prev]
       next[idx] = { ...entry, variantIndex: nextIndex, insertedPositive: inserted }
       return next
@@ -230,19 +248,23 @@ export default function PromptBuilder() {
     setPositive('')
     setNegative('')
     setLinkIdsByItem({})
+    setLastPosGroup(null)
+    setLastNegGroup(null)
   }
 
   function insertQualityTags() {
     if (containsSegment(positive, QUALITY_TAGS)) return
     pushHistory()
     const trimmed = positive.trim()
-    setPositive(trimmed ? `${QUALITY_TAGS}, ${trimmed}` : QUALITY_TAGS)
+    setPositive(trimmed ? `${QUALITY_TAGS}\n\n${trimmed}` : QUALITY_TAGS)
   }
 
   function insertStandardNegative() {
     if (containsSegment(negative, STANDARD_NEGATIVE)) return
     pushHistory()
-    setNegative((prev) => appendSegment(prev, STANDARD_NEGATIVE).text)
+    const newParagraph = lastNegGroup !== NEGATIVE_GROUP
+    setNegative((prev) => appendSegment(prev, STANDARD_NEGATIVE, { newParagraph }).text)
+    setLastNegGroup(NEGATIVE_GROUP)
   }
 
   function randomAdd() {
@@ -390,6 +412,22 @@ export default function PromptBuilder() {
             ))}
           </div>
           {centerItems.length === 0 && <div className="text-text-sub text-sm text-center mt-10">アイテムがありません</div>}
+        </div>
+        <div className="flex justify-between items-center pt-3 mt-1 border-t border-border-dark shrink-0">
+          <button
+            onClick={() => goToPool(-1)}
+            disabled={poolIndex <= 0}
+            className="px-4 py-2 bg-bg-panel border border-border-dark hover:border-accent hover:text-accent rounded-md text-xs transition-colors disabled:opacity-40 disabled:hover:border-border-dark disabled:hover:text-text-main disabled:cursor-not-allowed"
+          >
+            ← 戻る
+          </button>
+          <button
+            onClick={() => goToPool(1)}
+            disabled={poolIndex === -1 || poolIndex >= pools.length - 1}
+            className="px-4 py-2 bg-bg-panel border border-border-dark hover:border-accent hover:text-accent rounded-md text-xs transition-colors disabled:opacity-40 disabled:hover:border-border-dark disabled:hover:text-text-main disabled:cursor-not-allowed"
+          >
+            次へ →
+          </button>
         </div>
       </div>
 

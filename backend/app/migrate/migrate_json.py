@@ -318,9 +318,9 @@ def main():
             log(f"axesディレクトリが見つかりません: {AXES_DIR}")
             return
         migrate_character(db)
-        migrate_wordbank_master(db, "expression", "04_表情", 4)
+        migrate_labeled_wordbank(db, "expression", "04_表情", 4)
         migrate_expression_finished(db)
-        migrate_wordbank_master(db, "composition", "Composition (構図)", 3)
+        migrate_wordbank_master(db, "composition", "Composition (構図)", 9)
         migrate_composition_subset(db)
 
         migrate_labeled_wordbank(db, "headcount", "01_人数", 1)
