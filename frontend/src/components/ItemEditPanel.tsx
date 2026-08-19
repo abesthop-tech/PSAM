@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { api } from '../api/client'
 import type { Group, Item, ItemDetail, ItemType, Pool, Variant } from '../types'
-import { IconImage, IconPlus, IconTrash, IconX } from './Icons'
+import { IconImage, IconPlus, IconTrash, IconUpload, IconX } from './Icons'
 import ItemPickerModal from './ItemPickerModal'
 import Resizer from './Resizer'
 
@@ -67,6 +67,7 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
   const [newVariantText, setNewVariantText] = useState('')
   const [groupIds, setGroupIds] = useState<number[]>([])
   const [pendingGroupIds, setPendingGroupIds] = useState<number[]>([])
+  const [pendingLinkItems, setPendingLinkItems] = useState<Item[]>([])
   const [allPoolGroups, setAllPoolGroups] = useState<Group[]>([])
   const [addGroupSelect, setAddGroupSelect] = useState('')
   const [linkedItems, setLinkedItems] = useState<Item[]>([])
@@ -74,20 +75,31 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
   const [linkPickerOpen, setLinkPickerOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [savedMessage, setSavedMessage] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [panelWidth, setPanelWidth] = useState(450)
   const initialDraftRef = useRef<string>('')
+  const nameInputRef = useRef<HTMLInputElement>(null)
 
   const isNew = currentId === null
 
   useEffect(() => {
+    setCurrentId(itemId)
+  }, [itemId])
+
+  function resetForNewItem() {
+    const d = emptyDraft(initialPool)
+    setDraft(d)
+    initialDraftRef.current = JSON.stringify(d)
+    setVariants([])
+    setGroupIds([])
+    setPendingGroupIds([])
+    setLinkedItems([])
+    setPendingLinkItems([])
+  }
+
+  useEffect(() => {
     if (currentId === null) {
-      const d = emptyDraft(initialPool)
-      setDraft(d)
-      initialDraftRef.current = JSON.stringify(d)
-      setVariants([])
-      setGroupIds([])
-      setPendingGroupIds([])
-      setLinkedItems([])
+      resetForNewItem()
       return
     }
     api.getItem(currentId).then((detail) => {
@@ -100,6 +112,7 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
         setLinkedItems(items.filter((x): x is ItemDetail => !!x)),
       )
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentId, initialPool])
 
   useEffect(() => {
@@ -136,11 +149,15 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
           variants: variants.map((v) => ({ variant_text: v.variant_text, sort_order: v.sort_order })),
           group_ids: pendingGroupIds,
         })
-        setCurrentId(created.id)
+        if (pendingLinkItems.length > 0) {
+          await Promise.all(pendingLinkItems.map((it) => api.addLink(created.id, it.id)))
+        }
+        resetForNewItem()
+        nameInputRef.current?.focus()
       } else {
         await api.updateItem(currentId!, payload)
+        initialDraftRef.current = JSON.stringify(draft)
       }
-      initialDraftRef.current = JSON.stringify(draft)
       setSavedMessage(true)
       setTimeout(() => setSavedMessage(false), 2000)
       onSaved()
@@ -207,6 +224,12 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
   }
 
   async function addLinks(ids: number[]) {
+    if (isNew) {
+      const items = await Promise.all(ids.map((id) => api.getItem(id)))
+      setPendingLinkItems((prev) => [...prev, ...items])
+      setLinkPickerOpen(false)
+      return
+    }
     if (!currentId) return
     await Promise.all(ids.map((id) => api.addLink(currentId, id)))
     const items = await Promise.all(ids.map((id) => api.getItem(id)))
@@ -215,9 +238,26 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
   }
 
   async function removeLink(otherId: number) {
+    if (isNew) {
+      setPendingLinkItems((prev) => prev.filter((it) => it.id !== otherId))
+      return
+    }
     if (!currentId) return
     await api.removeLink(currentId, otherId)
     setLinkedItems((prev) => prev.filter((it) => it.id !== otherId))
+  }
+
+  async function handleImageUpload(file: File | undefined) {
+    if (!file || !currentId) return
+    setUploading(true)
+    try {
+      const updated = await api.uploadItemImage(currentId, file)
+      update('image_path', updated.image_path ?? '')
+    } catch (e) {
+      alert((e as Error).message)
+    } finally {
+      setUploading(false)
+    }
   }
 
   async function handleDelete() {
@@ -248,7 +288,6 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
             <button
               key={t}
               onClick={() => setTab(t)}
-              disabled={isNew && t === 'links'}
               className={`flex-1 py-3 text-sm border-b-2 transition-colors ${
                 tab === t ? 'text-accent border-accent font-medium bg-bg-panel' : 'text-text-sub border-transparent hover:text-text-main'
               } disabled:opacity-40 disabled:cursor-not-allowed`}
@@ -261,15 +300,36 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
         {tab === 'basic' && (
           <div className="flex-1 p-5 overflow-y-auto space-y-5">
             <div className="flex gap-4">
-              <div className="w-24 h-24 bg-bg-base border border-dashed border-border-dark rounded flex flex-col items-center justify-center text-text-sub shrink-0 overflow-hidden">
+              <label
+                className={`w-24 h-24 bg-bg-base border border-dashed border-border-dark rounded flex flex-col items-center justify-center text-text-sub shrink-0 overflow-hidden relative ${
+                  isNew ? '' : 'cursor-pointer hover:border-accent'
+                }`}
+                title={isNew ? 'アイテムを追加してから画像をアップロードできます' : '画像をアップロード'}
+              >
                 {draft.image_path ? <img src={draft.image_path} className="w-full h-full object-cover" /> : <IconImage width={24} height={24} />}
-              </div>
+                {!isNew && (
+                  <>
+                    <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                      {uploading ? <span className="text-[10px] text-white">アップロード中...</span> : <IconUpload width={18} height={18} className="text-white" />}
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      onChange={(e) => handleImageUpload(e.target.files?.[0])}
+                      className="hidden"
+                    />
+                  </>
+                )}
+              </label>
               <div className="flex-1 space-y-3">
                 <div>
                   <label className="block text-xs text-text-sub mb-1">Name</label>
                   <input
+                    ref={nameInputRef}
+                    autoFocus={isNew}
                     value={draft.name}
                     onChange={(e) => update('name', e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSave()}
                     className="w-full bg-bg-base border border-border-dark rounded px-2 py-1.5 text-sm focus:outline-none focus:border-accent"
                   />
                 </div>
@@ -465,8 +525,9 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
           </div>
         )}
 
-        {tab === 'links' && !isNew && (
+        {tab === 'links' && (
           <div className="flex-1 p-5 overflow-y-auto">
+            {isNew && <div className="text-[11px] text-text-sub mb-3">※ Save Changesを押すと確定します</div>}
             <div className="flex justify-between items-center mb-4">
               <span className="text-sm text-text-sub">関連付けられたアイテム</span>
               <button onClick={() => setLinkPickerOpen(true)} className="px-3 py-1.5 bg-bg-base border border-border-dark hover:border-accent hover:text-accent rounded text-xs transition-colors flex items-center gap-1">
@@ -474,7 +535,7 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
               </button>
             </div>
             <div className="space-y-2">
-              {linkedItems.map((it) => (
+              {(isNew ? pendingLinkItems : linkedItems).map((it) => (
                 <div key={it.id} className="flex justify-between items-center p-2.5 bg-bg-base border border-border-dark rounded group hover:border-accent transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 bg-bg-panel rounded flex justify-center items-center shrink-0">
@@ -489,7 +550,7 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
                   </button>
                 </div>
               ))}
-              {linkedItems.length === 0 && <div className="text-text-sub text-xs">関連付けはありません</div>}
+              {(isNew ? pendingLinkItems : linkedItems).length === 0 && <div className="text-text-sub text-xs">関連付けはありません</div>}
             </div>
           </div>
         )}
@@ -504,16 +565,16 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
             disabled={saving}
             className="px-4 py-2 rounded text-sm text-white bg-accent hover:bg-accent-hover transition-colors font-medium disabled:opacity-50"
           >
-            Save Changes
+            {isNew ? '追加' : '更新'}
           </button>
         </div>
       </div>
 
-      {linkPickerOpen && currentId && (
+      {linkPickerOpen && (
         <ItemPickerModal
           title="関連付けるアイテムを選択"
           pools={pools}
-          excludeItemIds={[currentId, ...linkedItems.map((it) => it.id)]}
+          excludeItemIds={isNew ? pendingLinkItems.map((it) => it.id) : [currentId!, ...linkedItems.map((it) => it.id)]}
           onClose={() => setLinkPickerOpen(false)}
           onConfirm={addLinks}
         />

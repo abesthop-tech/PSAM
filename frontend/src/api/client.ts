@@ -40,8 +40,15 @@ export const api = {
   deletePool: (key: string) => request(`/pools/${encodeURIComponent(key)}`, { method: 'DELETE' }),
 
   // ---------- items ----------
-  listItems: (params: { pool?: string; type?: ItemType; group_id?: number; search?: string }) =>
-    request<Item[]>(`/items${qs(params)}`),
+  listItems: (params: {
+    pool?: string
+    type?: ItemType
+    group_id?: number
+    ungrouped?: boolean
+    search?: string
+    sort?: 'name' | 'created' | 'updated' | 'used'
+    order?: 'asc' | 'desc'
+  }) => request<Item[]>(`/items${qs({ ...params, ungrouped: params.ungrouped ? 'true' : undefined })}`),
   getItem: (id: number) => request<ItemDetail>(`/items/${id}`),
   createItem: (data: {
     pool: string
@@ -60,6 +67,23 @@ export const api = {
   updateItem: (id: number, data: Partial<Item>) =>
     request<ItemDetail>(`/items/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteItem: (id: number) => request(`/items/${id}`, { method: 'DELETE' }),
+  touchItem: (id: number) => request<ItemDetail>(`/items/${id}/touch`, { method: 'POST' }),
+  uploadItemImage: async (id: number, file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    const res = await fetch(`${BASE}/items/${id}/image`, { method: 'POST', body: form })
+    if (!res.ok) {
+      let detail = res.statusText
+      try {
+        const body = await res.json()
+        detail = body.detail ?? detail
+      } catch {
+        // ignore
+      }
+      throw new Error(detail)
+    }
+    return res.json() as Promise<ItemDetail>
+  },
 
   addVariant: (itemId: number, variant_text: string, sort_order = 0) =>
     request<Variant>(`/items/${itemId}/variants`, { method: 'POST', body: JSON.stringify({ variant_text, sort_order }) }),

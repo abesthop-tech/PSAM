@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../api/client'
 import type { Group, Item, ItemType, Pool } from '../types'
 import { useDebounced } from '../hooks/useDebounced'
@@ -12,7 +12,7 @@ import {
 } from '../utils/promptText'
 import ItemCard from '../components/ItemCard'
 import Resizer from '../components/Resizer'
-import { IconBan, IconCopy, IconLightbulb, IconSearch, IconTrash, IconWand, IconX } from '../components/Icons'
+import { IconBan, IconCopy, IconDice, IconLightbulb, IconSearch, IconTrash, IconWand, IconX } from '../components/Icons'
 
 interface AddedEntry {
   item: Item
@@ -23,11 +23,19 @@ interface AddedEntry {
   loraClip: number | null
 }
 
+interface Snapshot {
+  entries: AddedEntry[]
+  positive: string
+  negative: string
+  linkIdsByItem: Record<number, number[]>
+}
+
 export default function PromptBuilder() {
   const [pools, setPools] = useState<Pool[]>([])
   const [selectedPool, setSelectedPool] = useState<string>('')
   const [groups, setGroups] = useState<Group[]>([])
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
+  const [showUngrouped, setShowUngrouped] = useState(false)
   const [groupSearch, setGroupSearch] = useState('')
   const debouncedGroupSearch = useDebounced(groupSearch)
 
@@ -44,6 +52,35 @@ export default function PromptBuilder() {
 
   const [leftWidth, setLeftWidth] = useState(256)
   const [rightWidth, setRightWidth] = useState(320)
+
+  const historyRef = useRef<Snapshot[]>([])
+
+  function pushHistory() {
+    historyRef.current.push({ entries, positive, negative, linkIdsByItem })
+    if (historyRef.current.length > 50) historyRef.current.shift()
+  }
+
+  function undo() {
+    const snap = historyRef.current.pop()
+    if (!snap) return
+    setEntries(snap.entries)
+    setPositive(snap.positive)
+    setNegative(snap.negative)
+    setLinkIdsByItem(snap.linkIdsByItem)
+  }
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'z') return
+      const target = e.target as HTMLElement | null
+      if (target && (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT')) return
+      e.preventDefault()
+      undo()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     api.listPools().then((ps) => {
@@ -68,17 +105,20 @@ export default function PromptBuilder() {
     api
       .listItems({
         pool: selectedPool,
-        group_id: selectedGroupId ?? undefined,
+        group_id: showUngrouped ? undefined : selectedGroupId ?? undefined,
+        ungrouped: showUngrouped,
         type: typeFilter || undefined,
         search: debouncedItemSearch || undefined,
       })
       .then(setCenterItems)
-  }, [selectedPool, selectedGroupId, typeFilter, debouncedItemSearch])
+  }, [selectedPool, selectedGroupId, showUngrouped, typeFilter, debouncedItemSearch])
 
   const addedIds = useMemo(() => new Set(entries.map((e) => e.item.id)), [entries])
 
   async function addItem(item: Item) {
     if (addedIds.has(item.id)) return
+    pushHistory()
+    api.touchItem(item.id).catch(() => {})
     const variantText = item.variants[0]?.variant_text ?? item.positive
 
     let newPositive = positive
@@ -136,6 +176,7 @@ export default function PromptBuilder() {
   function removeItem(itemId: number) {
     const entry = entries.find((e) => e.item.id === itemId)
     if (!entry) return
+    pushHistory()
     let newPositive = removeSegment(positive, entry.insertedPositive)
     if (entry.item.lora_name) newPositive = removeLoraTag(newPositive, entry.item.lora_name)
     const newNegative = removeSegment(negative, entry.insertedNegative)
@@ -149,14 +190,14 @@ export default function PromptBuilder() {
     })
   }
 
-  function cycleVariant(itemId: number) {
+  function selectVariant(itemId: number, nextIndex: number) {
+    pushHistory()
     setEntries((prev) => {
       const idx = prev.findIndex((e) => e.item.id === itemId)
       if (idx === -1) return prev
       const entry = prev[idx]
       const variants = entry.item.variants
-      if (variants.length <= 1) return prev
-      const nextIndex = (entry.variantIndex + 1) % variants.length
+      if (nextIndex === entry.variantIndex || nextIndex < 0 || nextIndex >= variants.length) return prev
       const nextText = variants[nextIndex].variant_text
       const removed = removeSegment(positive, entry.insertedPositive)
       const { text, inserted } = appendSegment(removed, nextText)
@@ -168,6 +209,7 @@ export default function PromptBuilder() {
   }
 
   function updateLoraStrength(itemId: number, field: 'model' | 'clip', value: number) {
+    pushHistory()
     setEntries((prev) => {
       const idx = prev.findIndex((e) => e.item.id === itemId)
       if (idx === -1) return prev
@@ -183,6 +225,7 @@ export default function PromptBuilder() {
   }
 
   function clearAll() {
+    pushHistory()
     setEntries([])
     setPositive('')
     setNegative('')
@@ -191,13 +234,22 @@ export default function PromptBuilder() {
 
   function insertQualityTags() {
     if (containsSegment(positive, QUALITY_TAGS)) return
+    pushHistory()
     const trimmed = positive.trim()
     setPositive(trimmed ? `${QUALITY_TAGS}, ${trimmed}` : QUALITY_TAGS)
   }
 
   function insertStandardNegative() {
     if (containsSegment(negative, STANDARD_NEGATIVE)) return
+    pushHistory()
     setNegative((prev) => appendSegment(prev, STANDARD_NEGATIVE).text)
+  }
+
+  function randomAdd() {
+    const candidates = centerItems.filter((it) => !addedIds.has(it.id))
+    if (candidates.length === 0) return
+    const pick = candidates[Math.floor(Math.random() * candidates.length)]
+    addItem(pick)
   }
 
   function copy(text: string) {
@@ -251,19 +303,36 @@ export default function PromptBuilder() {
         </div>
         <ul className="flex-1 overflow-y-auto py-2">
           <li
-            onClick={() => setSelectedGroupId(null)}
+            onClick={() => {
+              setSelectedGroupId(null)
+              setShowUngrouped(false)
+            }}
             className={`px-4 py-2 cursor-pointer transition-colors ${
-              selectedGroupId === null ? 'bg-bg-card border-l-2 border-accent text-accent font-medium' : 'text-text-sub hover:bg-bg-card hover:text-text-main'
+              selectedGroupId === null && !showUngrouped ? 'bg-bg-card border-l-2 border-accent text-accent font-medium' : 'text-text-sub hover:bg-bg-card hover:text-text-main'
             }`}
           >
             (すべて)
           </li>
+          <li
+            onClick={() => {
+              setSelectedGroupId(null)
+              setShowUngrouped(true)
+            }}
+            className={`px-4 py-2 cursor-pointer transition-colors ${
+              showUngrouped ? 'bg-bg-card border-l-2 border-accent text-accent font-medium' : 'text-text-sub hover:bg-bg-card hover:text-text-main'
+            }`}
+          >
+            未分類
+          </li>
           {groups.map((g) => (
             <li
               key={g.id}
-              onClick={() => setSelectedGroupId(g.id)}
+              onClick={() => {
+                setSelectedGroupId(g.id)
+                setShowUngrouped(false)
+              }}
               className={`px-4 py-2 cursor-pointer transition-colors flex justify-between items-center ${
-                selectedGroupId === g.id ? 'bg-bg-card border-l-2 border-accent text-accent font-medium' : 'text-text-sub hover:bg-bg-card hover:text-text-main'
+                selectedGroupId === g.id && !showUngrouped ? 'bg-bg-card border-l-2 border-accent text-accent font-medium' : 'text-text-sub hover:bg-bg-card hover:text-text-main'
               }`}
             >
               <span className="truncate">{g.name}</span>
@@ -301,6 +370,13 @@ export default function PromptBuilder() {
               </button>
             ))}
           </div>
+          <button
+            onClick={randomAdd}
+            title="表示中のアイテムからランダムに追加"
+            className="w-8 h-8 shrink-0 flex items-center justify-center bg-bg-panel border border-border-dark hover:border-accent hover:text-accent rounded-full transition-colors"
+          >
+            <IconDice width={15} height={15} />
+          </button>
         </div>
         <div className="flex-1 overflow-y-auto pr-1 pb-4">
           <div className="item-grid">
@@ -334,14 +410,24 @@ export default function PromptBuilder() {
                 key={e.item.id}
                 className="inline-flex items-center gap-1.5 px-2 py-1 bg-bg-base border border-border-dark rounded-md text-xs text-text-main group hover:border-accent transition-colors"
               >
-                <span
-                  onClick={() => e.item.variants.length > 1 && cycleVariant(e.item.id)}
-                  className={e.item.variants.length > 1 ? 'cursor-pointer' : ''}
-                  title={e.item.variants.length > 1 ? `クリックでバリエーション切替 (${e.variantIndex + 1}/${e.item.variants.length})` : undefined}
-                >
-                  {e.item.name}
-                  {e.item.variants.length > 1 && <span className="text-accent ml-1">↻</span>}
-                </span>
+                {e.item.variants.length > 1 ? (
+                  <select
+                    value={e.variantIndex}
+                    onChange={(ev) => selectVariant(e.item.id, Number(ev.target.value))}
+                    onClick={(ev) => ev.stopPropagation()}
+                    title="バリエーションを選択"
+                    className="bg-transparent text-text-main text-xs focus:outline-none cursor-pointer max-w-[10rem]"
+                  >
+                    {e.item.variants.map((v, i) => (
+                      <option key={v.id} value={i} className="bg-bg-panel text-text-main">
+                        {e.item.name}
+                        {v.variant_text && v.variant_text !== e.item.name ? ` — ${v.variant_text}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span>{e.item.name}</span>
+                )}
                 <button onClick={() => removeItem(e.item.id)} className="text-text-sub hover:text-red-400 focus:outline-none">
                   <IconX width={11} height={11} />
                 </button>

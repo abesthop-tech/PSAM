@@ -14,6 +14,9 @@ frontend/dist-ssr/
 *.log
 backend/migration_log.txt
 
+# --- アップロード画像(ローカルのみ、DBには相対パスのみ記録) ---
+backend/uploads/
+
 # --- エディタ/OS ---
 .vscode/*
 !.vscode/extensions.json

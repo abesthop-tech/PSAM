@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -73,6 +75,9 @@ class ItemOut(ItemBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
     variants: list[VariantOut] = []
+    created_at: datetime
+    updated_at: datetime
+    last_used_at: datetime | None = None
 
 
 class ItemDetailOut(ItemOut):

@@ -1,4 +1,7 @@
+from datetime import datetime, timezone
+
 from sqlalchemy import (
+    DateTime,
     ForeignKey,
     Integer,
     String,
@@ -8,6 +11,10 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class Pool(Base):
@@ -37,6 +44,16 @@ class Item(Base):
     lora_clip_strength: Mapped[float | None] = mapped_column(nullable=True)
     image_path: Mapped[str | None] = mapped_column(String, nullable=True)
     memo: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Python-side defaults (not server_default) since this column was added
+    # to an already-existing SQLite table via raw ALTER TABLE — the table
+    # itself has no DB-level DEFAULT clause for SQLAlchemy to rely on.
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+    # Deliberately NOT auto-updated via SQLAlchemy's onupdate — that fires on
+    # any UPDATE to the row (including touch_item bumping last_used_at only),
+    # which would conflate "last edited" with "last used in Build". Only
+    # update_item() sets this explicitly.
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
     variants: Mapped[list["ItemVariant"]] = relationship(
         back_populates="item", cascade="all, delete-orphan", order_by="ItemVariant.sort_order"

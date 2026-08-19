@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../api/client'
 import type { Group, Item, ItemType, Pool } from '../types'
 import { useDebounced } from '../hooks/useDebounced'
+import { useShortcut } from '../hooks/useShortcuts'
 import ItemEditPanel from '../components/ItemEditPanel'
 import ComposeFinishedDialog from '../components/ComposeFinishedDialog'
 import { IconImage, IconObjectGroup, IconPen, IconPlus, IconSearch } from '../components/Icons'
@@ -16,6 +17,7 @@ export default function ItemsManager() {
   const debouncedSearch = useDebounced(search)
   const [items, setItems] = useState<Item[]>([])
   const [selectedIds, setSelectedIds] = useState<number[]>([])
+  const [sortBy, setSortBy] = useState<'name' | 'created' | 'updated' | 'used'>('name')
   const [sortAsc, setSortAsc] = useState(true)
 
   const [editingId, setEditingId] = useState<number | null | undefined>(undefined) // undefined = closed
@@ -41,11 +43,13 @@ export default function ItemsManager() {
         type: (typeFilter as ItemType) || undefined,
         group_id: groupFilter || undefined,
         search: debouncedSearch || undefined,
+        sort: sortBy,
+        order: sortAsc ? 'asc' : 'desc',
       })
       .then(setItems)
   }
 
-  useEffect(refresh, [poolFilter, typeFilter, groupFilter, debouncedSearch])
+  useEffect(refresh, [poolFilter, typeFilter, groupFilter, debouncedSearch, sortBy, sortAsc])
 
   function toggleSelect(id: number) {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
@@ -57,7 +61,9 @@ export default function ItemsManager() {
 
   const selectedParts = items.filter((it) => selectedIds.includes(it.id) && it.type === 'part')
 
-  const sortedItems = [...items].sort((a, b) => (sortAsc ? 1 : -1) * a.name.localeCompare(b.name, 'ja'))
+  useShortcut('editItem', () => {
+    if (selectedIds.length === 1) setEditingId(selectedIds[0])
+  })
 
   function poolLabel(key: string) {
     return pools.find((p) => p.key === key)?.display_name ?? key
@@ -137,8 +143,18 @@ export default function ItemsManager() {
           <div className="grid grid-cols-12 gap-4 p-3 border-b border-border-dark bg-bg-card text-xs font-medium text-text-sub items-center shrink-0">
             <div className="col-span-3 flex items-center gap-2">
               <input type="checkbox" checked={items.length > 0 && selectedIds.length === items.length} onChange={toggleSelectAll} className="w-3.5 h-3.5 accent-accent rounded cursor-pointer" />
-              <button onClick={() => setSortAsc((v) => !v)} className="flex items-center gap-1 hover:text-text-main transition-colors">
-                Name <span className="text-[10px]">{sortAsc ? '▲' : '▼'}</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                className="bg-transparent text-xs font-medium focus:outline-none cursor-pointer -ml-1"
+              >
+                <option value="name">Name</option>
+                <option value="created">追加順</option>
+                <option value="updated">更新順</option>
+                <option value="used">使用順</option>
+              </select>
+              <button onClick={() => setSortAsc((v) => !v)} className="flex items-center hover:text-text-main transition-colors">
+                <span className="text-[10px]">{sortAsc ? '▲' : '▼'}</span>
               </button>
             </div>
             <div className="col-span-2">Pool</div>
@@ -147,7 +163,7 @@ export default function ItemsManager() {
             <div className="col-span-1 text-right">Edit</div>
           </div>
           <div className="flex-1 overflow-y-auto">
-            {sortedItems.map((item) => (
+            {items.map((item) => (
               <div
                 key={item.id}
                 onClick={() => toggleSelect(item.id)}

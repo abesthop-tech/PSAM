@@ -1,4 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+import shutil
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Literal
+
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
@@ -6,6 +12,9 @@ from .. import models, schemas
 from ..database import get_db
 
 router = APIRouter(prefix="/api/items", tags=["items"])
+
+UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent / "uploads" / "items"
+ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
 def _item_to_detail(db: Session, item: models.Item) -> schemas.ItemDetailOut:
@@ -34,7 +43,10 @@ def list_items(
     pool: str | None = None,
     type: str | None = None,
     group_id: int | None = None,
+    ungrouped: bool = False,
     search: str | None = None,
+    sort: Literal["name", "created", "updated", "used"] = "name",
+    order: Literal["asc", "desc"] = "asc",
     db: Session = Depends(get_db),
 ):
     stmt = select(models.Item)
@@ -46,6 +58,12 @@ def list_items(
         stmt = stmt.join(
             models.ItemGroupLink, models.ItemGroupLink.item_id == models.Item.id
         ).where(models.ItemGroupLink.group_id == group_id)
+    if ungrouped:
+        stmt = stmt.where(
+            ~select(models.ItemGroupLink.item_id)
+            .where(models.ItemGroupLink.item_id == models.Item.id)
+            .exists()
+        )
     if search:
         like = f"%{search}%"
         stmt = stmt.where(
@@ -55,7 +73,19 @@ def list_items(
                 models.Item.negative.ilike(like),
             )
         )
-    stmt = stmt.order_by(models.Item.pool, models.Item.name)
+    sort_column = {
+        "name": models.Item.name,
+        "created": models.Item.created_at,
+        "updated": models.Item.updated_at,
+        "used": models.Item.last_used_at,
+    }[sort]
+    col = sort_column.asc() if order == "asc" else sort_column.desc()
+    if sort == "used":
+        col = col.nulls_last()
+    if sort == "name":
+        stmt = stmt.order_by(models.Item.pool, col)
+    else:
+        stmt = stmt.order_by(col)
     return db.scalars(stmt).unique().all()
 
 
@@ -113,6 +143,8 @@ def update_item(item_id: int, payload: schemas.ItemUpdate, db: Session = Depends
         _check_unique_name(db, new_pool, new_name, exclude_id=item.id)
     for field, value in updates.items():
         setattr(item, field, value)
+    if updates:
+        item.updated_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(item)
     return _item_to_detail(db, item)
@@ -126,6 +158,36 @@ def delete_item(item_id: int, db: Session = Depends(get_db)):
     db.delete(item)
     db.commit()
     return {"ok": True}
+
+
+@router.post("/{item_id}/touch", response_model=schemas.ItemDetailOut)
+def touch_item(item_id: int, db: Session = Depends(get_db)):
+    item = db.get(models.Item, item_id)
+    if not item:
+        raise HTTPException(404, "アイテムが見つかりません")
+    item.last_used_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(item)
+    return _item_to_detail(db, item)
+
+
+@router.post("/{item_id}/image", response_model=schemas.ItemDetailOut)
+def upload_item_image(item_id: int, file: UploadFile, db: Session = Depends(get_db)):
+    item = db.get(models.Item, item_id)
+    if not item:
+        raise HTTPException(404, "アイテムが見つかりません")
+    ext = Path(file.filename or "").suffix.lower()
+    if ext not in ALLOWED_IMAGE_EXTENSIONS:
+        raise HTTPException(400, "対応していない画像形式です(jpg/jpeg/png/webpのみ)")
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    filename = f"{item_id}_{int(time.time() * 1000)}{ext}"
+    dest = UPLOAD_DIR / filename
+    with dest.open("wb") as f:
+        shutil.copyfileobj(file.file, f)
+    item.image_path = f"/uploads/items/{filename}"
+    db.commit()
+    db.refresh(item)
+    return _item_to_detail(db, item)
 
 
 # ---------- variants ----------

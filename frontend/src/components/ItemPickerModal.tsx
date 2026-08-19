@@ -31,6 +31,7 @@ export default function ItemPickerModal({
   const debouncedSearch = useDebounced(search)
   const [items, setItems] = useState<Item[]>([])
   const [selected, setSelected] = useState<number[]>([])
+  const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null)
   const excludeSet = useMemo(() => new Set(excludeItemIds), [excludeItemIds])
 
   useEffect(() => {
@@ -45,6 +46,17 @@ export default function ItemPickerModal({
       if (!multiple) return [id]
       return [...prev, id]
     })
+  }
+
+  function onItemClick(index: number, item: Item, e: React.MouseEvent) {
+    if (multiple && e.shiftKey && lastClickedIndex !== null) {
+      const [start, end] = [lastClickedIndex, index].sort((a, b) => a - b)
+      const rangeIds = visibleItems.slice(start, end + 1).map((it) => it.id)
+      setSelected((prev) => Array.from(new Set([...prev, ...rangeIds])))
+      return
+    }
+    toggle(item.id)
+    setLastClickedIndex(index)
   }
 
   return (
@@ -90,13 +102,13 @@ export default function ItemPickerModal({
 
         <div className="flex-1 p-5 overflow-y-auto bg-[#1e1e1e]">
           <div className="item-grid">
-            {visibleItems.map((item) => (
+            {visibleItems.map((item, i) => (
               <ItemCard
                 key={item.id}
                 item={item}
                 showCheckbox={multiple}
                 selected={selected.includes(item.id)}
-                onClick={() => toggle(item.id)}
+                onClick={(e) => onItemClick(i, item, e)}
               />
             ))}
           </div>

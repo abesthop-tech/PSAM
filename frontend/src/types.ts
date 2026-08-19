@@ -26,6 +26,9 @@ export interface Item {
   image_path: string | null
   memo: string | null
   variants: Variant[]
+  created_at: string
+  updated_at: string
+  last_used_at: string | null
 }
 
 export interface ItemDetail extends Item {
