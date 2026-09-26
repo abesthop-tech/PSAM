@@ -1,4 +1,4 @@
-import type { DbTablePage, Group, Item, ItemDetail, ItemType, Pool, PromptSet, PromptSetEntry, Variant } from '../types'
+import type { ComfyImageRef, ComfyJob, ComfySubmitInput, DbTablePage, Group, Item, ItemDetail, ItemType, Pool, PromptSet, PromptSetEntry, Variant } from '../types'
 
 const BASE = '/api'
 
@@ -136,4 +136,16 @@ export const api = {
   // ---------- export ----------
   exportPoolUrl: (pool: string) => `${BASE}/export/pools/${encodeURIComponent(pool)}`,
   exportGroupUrl: (groupId: number) => `${BASE}/export/groups/${groupId}`,
+
+  // ---------- ComfyUI ----------
+  comfyStatus: () => request<{ connected: boolean; url: string }>('/comfy/status'),
+  comfyModels: () => request<{ checkpoints: string[]; loras: string[] }>('/comfy/models'),
+  syncComfyStyleItems: () => request<{ pool: string; created: number; total: number }>('/comfy/sync-style-items', { method: 'POST' }),
+  comfySettings: () => request<{ defaults: Record<string, unknown>; last_used: Record<string, unknown> }>('/comfy/settings'),
+  comfySubmit: (data: ComfySubmitInput) => request<{ prompt_id: string; number: number }>('/comfy/submit', { method: 'POST', body: JSON.stringify(data) }),
+  comfyJobs: () => request<Array<Pick<ComfyJob, 'prompt_id' | 'source_item_ids' | 'created_at'>>>('/comfy/jobs'),
+  comfyJob: (promptId: string) => request<ComfyJob>(`/comfy/jobs/${encodeURIComponent(promptId)}`),
+  comfyJobImageUrl: (promptId: string, image: ComfyImageRef) => `${BASE}/comfy/jobs/${encodeURIComponent(promptId)}/image${qs({ filename: image.filename, subfolder: image.subfolder, type: image.type })}`,
+  registerComfyPreview: (promptId: string, image: ComfyImageRef, itemIds: number[]) =>
+    request<{ registered_item_ids: number[]; skipped_item_ids: number[] }>(`/comfy/jobs/${encodeURIComponent(promptId)}/register-preview`, { method: 'POST', body: JSON.stringify({ image, item_ids: itemIds }) }),
 }

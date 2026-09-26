@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import type { Group, Item, ItemType, Pool, PromptSet } from '../types'
 import { useDebounced } from '../hooks/useDebounced'
@@ -37,6 +38,7 @@ interface Snapshot {
 const NEGATIVE_GROUP = '__negative__'
 
 export default function PromptBuilder() {
+  const navigate = useNavigate()
   const [pools, setPools] = useState<Pool[]>([])
   const [selectedPool, setSelectedPool] = useState<string>('')
   const [groups, setGroups] = useState<Group[]>([])
@@ -327,6 +329,15 @@ export default function PromptBuilder() {
     navigator.clipboard?.writeText(text)
   }
 
+  function handoffToComfy(mode: 'replace' | 'append') {
+    sessionStorage.setItem('psam.comfy.handoff', JSON.stringify({
+      positive,
+      source_item_ids: entries.map((entry) => entry.item.id),
+      mode,
+    }))
+    navigate('/comfy')
+  }
+
   const suggestions = useMemo(() => {
     const seen = new Set<number>()
     const result: Item[] = []
@@ -607,6 +618,10 @@ export default function PromptBuilder() {
           </button>
         </div>
         <button onClick={() => setPromptSetsOpen(true)} className="mt-2 w-full py-2 bg-bg-base border border-border-dark hover:border-accent hover:text-accent rounded-md text-xs transition-colors">プロンプトセットを保存・読み込み</button>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <button onClick={() => handoffToComfy('replace')} className="py-2 bg-accent text-black hover:bg-accent-hover rounded-md text-xs font-medium transition-colors">ComfyUIへ置換して渡す</button>
+          <button onClick={() => handoffToComfy('append')} className="py-2 bg-bg-base border border-accent text-accent hover:bg-accent hover:text-black rounded-md text-xs font-medium transition-colors">末尾へ追加して渡す</button>
+        </div>
 
         {suggestions.length > 0 && (
           <div className="mt-4 p-3 bg-[#2a2722] border border-[#4a4231] rounded-md shadow-sm">

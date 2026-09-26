@@ -13,6 +13,8 @@ frontend/dist-ssr/
 # --- ログ・一時ファイル ---
 *.log
 backend/migration_log.txt
+backend/local_settings.json
+.claude/settings.local.json
 
 # --- アップロード画像(ローカルのみ、DBには相対パスのみ記録) ---
 backend/uploads/

@@ -76,3 +76,55 @@ export interface PromptSet {
   created_at: string
   updated_at: string
 }
+
+export interface ComfyLoraInput {
+  enabled: boolean
+  path: string | null
+  model_strength: number
+  clip_strength: number
+}
+
+export interface ComfyHiresInput {
+  enabled: boolean
+  method: string
+  scale: number
+  steps: number
+  cfg: number
+  sampler: string
+  scheduler: string
+  denoise: number
+}
+
+export interface ComfySubmitInput {
+  positive: string
+  negative: string
+  checkpoint: string
+  style_lora: ComfyLoraInput
+  character_lora: ComfyLoraInput
+  width: number
+  height: number
+  batch_size: number
+  seed: number | null
+  steps: number
+  cfg: number
+  sampler: string
+  scheduler: string
+  denoise: number
+  hires: ComfyHiresInput
+  filename_prefix: string
+  source_item_ids: number[]
+}
+
+export interface ComfyImageRef {
+  filename: string
+  subfolder: string
+  type: string
+}
+
+export interface ComfyJob {
+  prompt_id: string
+  state: 'running' | 'complete' | 'error'
+  images: ComfyImageRef[]
+  source_item_ids: number[]
+  created_at: number
+}
