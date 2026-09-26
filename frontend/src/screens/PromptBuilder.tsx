@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../api/client'
-import type { Group, Item, ItemType, Pool } from '../types'
+import type { Group, Item, ItemType, Pool, PromptSet } from '../types'
 import { useDebounced } from '../hooks/useDebounced'
 import { QUALITY_TAGS, STANDARD_NEGATIVE } from '../constants'
 import {
@@ -11,6 +11,8 @@ import {
   upsertLoraTag,
 } from '../utils/promptText'
 import ItemCard from '../components/ItemCard'
+import ItemEditPanel from '../components/ItemEditPanel'
+import PromptSetModal from '../components/PromptSetModal'
 import Resizer from '../components/Resizer'
 import { IconBan, IconCopy, IconDice, IconLightbulb, IconSearch, IconTrash, IconWand, IconX } from '../components/Icons'
 
@@ -58,6 +60,10 @@ export default function PromptBuilder() {
 
   const [leftWidth, setLeftWidth] = useState(256)
   const [rightWidth, setRightWidth] = useState(320)
+  const [favoriteIds, setFavoriteIds] = useState<number[]>([])
+  const [specialView, setSpecialView] = useState<'normal' | 'favorites' | 'recent'>('normal')
+  const [editingId, setEditingId] = useState<number | undefined>(undefined)
+  const [promptSetsOpen, setPromptSetsOpen] = useState(false)
 
   const historyRef = useRef<Snapshot[]>([])
 
@@ -95,16 +101,15 @@ export default function PromptBuilder() {
       setPools(ps)
       if (ps.length > 0) setSelectedPool(ps[0].key)
     })
+    api.listFavoriteIds().then(setFavoriteIds)
   }, [])
 
   useEffect(() => {
     if (!selectedPool) return
     api.listGroups({ pool: selectedPool, search: debouncedGroupSearch || undefined }).then((gs) => {
       setGroups(gs)
-      setSelectedGroupId((prev) => {
-        if (debouncedGroupSearch) return prev
-        return gs.length > 0 ? gs[0].id : null
-      })
+      setSelectedGroupId((prev) => debouncedGroupSearch ? prev : null)
+      if (!debouncedGroupSearch) setShowUngrouped(false)
     })
   }, [selectedPool, debouncedGroupSearch])
 
@@ -113,13 +118,15 @@ export default function PromptBuilder() {
     api
       .listItems({
         pool: selectedPool,
-        group_id: showUngrouped ? undefined : selectedGroupId ?? undefined,
-        ungrouped: showUngrouped,
+        group_id: specialView === 'normal' && !showUngrouped ? selectedGroupId ?? undefined : undefined,
+        ungrouped: specialView === 'normal' && showUngrouped,
         type: typeFilter || undefined,
         search: debouncedItemSearch || undefined,
+        sort: specialView === 'recent' ? 'used' : 'name',
+        order: specialView === 'recent' ? 'desc' : 'asc',
       })
-      .then(setCenterItems)
-  }, [selectedPool, selectedGroupId, showUngrouped, typeFilter, debouncedItemSearch])
+      .then((items) => setCenterItems(specialView === 'favorites' ? items.filter((it) => favoriteIds.includes(it.id)) : specialView === 'recent' ? items.filter((it) => it.last_used_at).slice(0, 20) : items))
+  }, [selectedPool, selectedGroupId, showUngrouped, typeFilter, debouncedItemSearch, specialView, favoriteIds])
 
   const addedIds = useMemo(() => new Set(entries.map((e) => e.item.id)), [entries])
   const poolIndex = useMemo(() => pools.findIndex((p) => p.key === selectedPool), [pools, selectedPool])
@@ -128,6 +135,48 @@ export default function PromptBuilder() {
     const next = poolIndex + offset
     if (next < 0 || next >= pools.length) return
     setSelectedPool(pools[next].key)
+    setSpecialView('normal')
+  }
+
+  async function toggleFavorite(itemId: number) {
+    if (favoriteIds.includes(itemId)) {
+      await api.removeFavorite(itemId)
+      setFavoriteIds((ids) => ids.filter((id) => id !== itemId))
+    } else {
+      await api.addFavorite(itemId)
+      setFavoriteIds((ids) => [...ids, itemId])
+    }
+  }
+
+  async function refreshEditedItem(itemId: number) {
+    const updated = await api.getItem(itemId)
+    setCenterItems((items) => items.map((it) => it.id === itemId ? updated : it))
+    setEntries((current) => current.map((entry) => entry.item.id === itemId ? { ...entry, item: updated } : entry))
+  }
+
+  async function loadPromptSet(set: PromptSet) {
+    const loaded: (AddedEntry | null)[] = await Promise.all(set.entries.map(async (saved): Promise<AddedEntry | null> => {
+      const item = await api.getItem(saved.item_id).catch(() => null)
+      if (!item) return null
+      const variantIndex = Math.min(saved.variant_index, Math.max(item.variants.length - 1, 0))
+      return {
+        item, variantIndex,
+        insertedPositive: item.variants[variantIndex]?.variant_text ?? item.positive,
+        insertedNegative: item.negative,
+        loraModel: saved.lora_model,
+        loraClip: saved.lora_clip,
+      }
+    }))
+    const valid = loaded.filter((entry): entry is AddedEntry => entry !== null)
+    historyRef.current = []
+    setEntries(valid)
+    setPositive(set.positive)
+    setNegative(set.negative)
+    setLinkedInfo({})
+    setLinkIdsByItem({})
+    setLastPosGroup(valid.at(-1)?.item.pool ?? null)
+    setLastNegGroup(valid.at(-1)?.item.pool ?? null)
+    setPromptSetsOpen(false)
   }
 
   async function addItem(item: Item) {
@@ -301,7 +350,7 @@ export default function PromptBuilder() {
         <div className="p-4 border-b border-border-dark">
           <select
             value={selectedPool}
-            onChange={(e) => setSelectedPool(e.target.value)}
+            onChange={(e) => { setSelectedPool(e.target.value); setSpecialView('normal') }}
             className="w-full bg-bg-card border border-border-dark rounded px-2 py-1.5 text-sm focus:outline-none focus:border-accent cursor-pointer"
           >
             {pools.map((p) => (
@@ -324,8 +373,12 @@ export default function PromptBuilder() {
           </div>
         </div>
         <ul className="flex-1 overflow-y-auto py-2">
+          <li onClick={() => { setSpecialView('favorites'); setSelectedGroupId(null); setShowUngrouped(false) }} className={`px-4 py-2 cursor-pointer transition-colors ${specialView === 'favorites' ? 'bg-bg-card border-l-2 border-accent text-accent font-medium' : 'text-text-sub hover:bg-bg-card hover:text-text-main'}`}>★ お気に入り</li>
+          <li onClick={() => { setSpecialView('recent'); setSelectedGroupId(null); setShowUngrouped(false) }} className={`px-4 py-2 cursor-pointer transition-colors ${specialView === 'recent' ? 'bg-bg-card border-l-2 border-accent text-accent font-medium' : 'text-text-sub hover:bg-bg-card hover:text-text-main'}`}>最近使ったアイテム</li>
+          <li className="px-4 pt-3 pb-1 text-[10px] text-text-sub uppercase">グループ</li>
           <li
             onClick={() => {
+              setSpecialView('normal')
               setSelectedGroupId(null)
               setShowUngrouped(false)
             }}
@@ -337,6 +390,7 @@ export default function PromptBuilder() {
           </li>
           <li
             onClick={() => {
+              setSpecialView('normal')
               setSelectedGroupId(null)
               setShowUngrouped(true)
             }}
@@ -350,6 +404,7 @@ export default function PromptBuilder() {
             <li
               key={g.id}
               onClick={() => {
+                setSpecialView('normal')
                 setSelectedGroupId(g.id)
                 setShowUngrouped(false)
               }}
@@ -388,7 +443,7 @@ export default function PromptBuilder() {
                   typeFilter === t ? 'bg-bg-card text-text-main shadow border border-border-dark font-medium' : 'text-text-sub hover:text-text-main'
                 }`}
               >
-                {t === '' ? 'All' : t === 'part' ? 'Part' : 'Finished'}
+                {t === '' ? 'すべて' : t === 'part' ? 'Part（素材）' : 'Finished（完成品）'}
               </button>
             ))}
           </div>
@@ -408,6 +463,9 @@ export default function PromptBuilder() {
                 item={item}
                 selected={addedIds.has(item.id)}
                 onClick={() => (addedIds.has(item.id) ? removeItem(item.id) : addItem(item))}
+                favorite={favoriteIds.includes(item.id)}
+                onFavorite={(e) => { e.stopPropagation(); toggleFavorite(item.id) }}
+                onEdit={(e) => { e.stopPropagation(); setEditingId(item.id) }}
               />
             ))}
           </div>
@@ -437,9 +495,9 @@ export default function PromptBuilder() {
       <div style={{ width: rightWidth }} className="min-w-[250px] bg-bg-panel flex flex-col p-4 z-10 relative overflow-y-auto shrink-0">
         <div className="mb-4">
           <div className="text-xs text-text-sub mb-2 flex justify-between items-center">
-            <span>Added Items</span>
+            <span>追加済みアイテム</span>
             <button onClick={clearAll} className="hover:text-red-400 transition-colors flex items-center gap-1">
-              <IconTrash width={11} height={11} /> Clear
+              <IconTrash width={11} height={11} /> クリア
             </button>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -466,6 +524,7 @@ export default function PromptBuilder() {
                 ) : (
                   <span>{e.item.name}</span>
                 )}
+                <button onClick={() => setEditingId(e.item.id)} title="アイテムを編集" className="text-text-sub hover:text-accent">✎</button>
                 <button onClick={() => removeItem(e.item.id)} className="text-text-sub hover:text-red-400 focus:outline-none">
                   <IconX width={11} height={11} />
                 </button>
@@ -478,7 +537,7 @@ export default function PromptBuilder() {
         {entries.some((e) => e.item.lora_name) && (
           <div className="mb-4 bg-bg-base p-3 rounded-md border border-border-dark shadow-inner">
             <div className="text-xs text-text-sub border-b border-border-dark pb-1.5 mb-2 flex items-center gap-1">
-              <span className="text-purple-400">◆</span> Active LoRAs
+              <span className="text-purple-400">◆</span> 使用中のLoRA
             </div>
             <div className="space-y-2">
               {entries
@@ -513,9 +572,9 @@ export default function PromptBuilder() {
         <div className="flex-1 flex flex-col gap-3 min-h-[300px]">
           <div className="flex-1 flex flex-col">
             <div className="flex justify-between items-end mb-1">
-              <label className="text-xs text-text-sub font-medium">Positive Prompt</label>
+              <label className="text-xs text-text-sub font-medium">Positiveプロンプト</label>
               <button onClick={() => copy(positive)} className="text-[10px] text-accent hover:text-accent-hover flex items-center gap-1">
-                <IconCopy width={10} height={10} /> Copy
+                <IconCopy width={10} height={10} /> コピー
               </button>
             </div>
             <textarea
@@ -526,9 +585,9 @@ export default function PromptBuilder() {
           </div>
           <div className="flex-1 flex flex-col">
             <div className="flex justify-between items-end mb-1">
-              <label className="text-xs text-text-sub font-medium">Negative Prompt</label>
+              <label className="text-xs text-text-sub font-medium">Negativeプロンプト</label>
               <button onClick={() => copy(negative)} className="text-[10px] text-accent hover:text-accent-hover flex items-center gap-1">
-                <IconCopy width={10} height={10} /> Copy
+                <IconCopy width={10} height={10} /> コピー
               </button>
             </div>
             <textarea
@@ -547,6 +606,7 @@ export default function PromptBuilder() {
             <IconBan width={12} height={12} /> 標準ネガ
           </button>
         </div>
+        <button onClick={() => setPromptSetsOpen(true)} className="mt-2 w-full py-2 bg-bg-base border border-border-dark hover:border-accent hover:text-accent rounded-md text-xs transition-colors">プロンプトセットを保存・読み込み</button>
 
         {suggestions.length > 0 && (
           <div className="mt-4 p-3 bg-[#2a2722] border border-[#4a4231] rounded-md shadow-sm">
@@ -567,6 +627,8 @@ export default function PromptBuilder() {
           </div>
         )}
       </div>
+      {editingId !== undefined && <ItemEditPanel itemId={editingId} initialPool={selectedPool} pools={pools} onClose={() => setEditingId(undefined)} onSaved={() => refreshEditedItem(editingId)} onDeleted={() => { removeItem(editingId); setEditingId(undefined) }} />}
+      {promptSetsOpen && <PromptSetModal itemCount={entries.length} positive={positive} negative={negative} entries={entries.map((entry) => ({ item_id: entry.item.id, variant_index: entry.variantIndex, lora_model: entry.loraModel, lora_clip: entry.loraClip }))} onClose={() => setPromptSetsOpen(false)} onLoad={loadPromptSet} />}
     </div>
   )
 }

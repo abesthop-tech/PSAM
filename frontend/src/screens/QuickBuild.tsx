@@ -148,7 +148,7 @@ export default function QuickBuild() {
         <div className="flex justify-between items-center mb-3 shrink-0">
           <h1 className="text-xl font-medium text-text-main">簡易プロンプト作成</h1>
           <button onClick={clearAll} className="text-xs text-text-sub hover:text-red-400 transition-colors flex items-center gap-1">
-            <IconTrash width={11} height={11} /> Clear
+            <IconTrash width={11} height={11} /> クリア
           </button>
         </div>
         <div className="flex-1 overflow-y-auto space-y-3 pr-1">
@@ -217,7 +217,7 @@ export default function QuickBuild() {
         {allEntries.some((e) => e.item.lora_name) && (
           <div className="mb-4 bg-bg-base p-3 rounded-md border border-border-dark shadow-inner">
             <div className="text-xs text-text-sub border-b border-border-dark pb-1.5 mb-2 flex items-center gap-1">
-              <span className="text-purple-400">◆</span> Active LoRAs
+              <span className="text-purple-400">◆</span> 使用中のLoRA
             </div>
             <div className="space-y-2">
               {CATEGORIES.map((cat) =>
@@ -254,9 +254,9 @@ export default function QuickBuild() {
         <div className="flex-1 flex flex-col gap-3 min-h-[300px]">
           <div className="flex-1 flex flex-col">
             <div className="flex justify-between items-end mb-1">
-              <label className="text-xs text-text-sub font-medium">Positive Prompt</label>
+              <label className="text-xs text-text-sub font-medium">Positiveプロンプト</label>
               <button onClick={() => copy(positive)} className="text-[10px] text-accent hover:text-accent-hover flex items-center gap-1">
-                <IconCopy width={10} height={10} /> Copy
+                <IconCopy width={10} height={10} /> コピー
               </button>
             </div>
             <textarea
@@ -267,9 +267,9 @@ export default function QuickBuild() {
           </div>
           <div className="flex-1 flex flex-col">
             <div className="flex justify-between items-end mb-1">
-              <label className="text-xs text-text-sub font-medium">Negative Prompt</label>
+              <label className="text-xs text-text-sub font-medium">Negativeプロンプト</label>
               <button onClick={() => copy(negative)} className="text-[10px] text-accent hover:text-accent-hover flex items-center gap-1">
-                <IconCopy width={10} height={10} /> Copy
+                <IconCopy width={10} height={10} /> コピー
               </button>
             </div>
             <textarea

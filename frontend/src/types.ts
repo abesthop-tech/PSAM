@@ -58,3 +58,21 @@ export interface DbTablePage {
   page_size: number
   total_pages: number
 }
+
+export interface PromptSetEntry {
+  item_id: number
+  variant_index: number
+  lora_model: number | null
+  lora_clip: number | null
+}
+
+export interface PromptSet {
+  id: number
+  name: string
+  memo: string | null
+  positive: string
+  negative: string
+  entries: PromptSetEntry[]
+  created_at: string
+  updated_at: string
+}

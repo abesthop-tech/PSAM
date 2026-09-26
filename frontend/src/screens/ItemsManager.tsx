@@ -19,13 +19,25 @@ export default function ItemsManager() {
   const [selectedIds, setSelectedIds] = useState<number[]>([])
   const [sortBy, setSortBy] = useState<'name' | 'created' | 'updated' | 'used'>('name')
   const [sortAsc, setSortAsc] = useState(true)
+  const [favoriteIds, setFavoriteIds] = useState<number[]>([])
 
   const [editingId, setEditingId] = useState<number | null | undefined>(undefined) // undefined = closed
   const [composeOpen, setComposeOpen] = useState(false)
 
   useEffect(() => {
     api.listPools().then(setPools)
+    api.listFavoriteIds().then(setFavoriteIds)
   }, [])
+
+  async function toggleFavorite(id: number) {
+    if (favoriteIds.includes(id)) {
+      await api.removeFavorite(id)
+      setFavoriteIds((ids) => ids.filter((x) => x !== id))
+    } else {
+      await api.addFavorite(id)
+      setFavoriteIds((ids) => [...ids, id])
+    }
+  }
 
   useEffect(() => {
     setGroupFilter('')
@@ -73,7 +85,7 @@ export default function ItemsManager() {
     <div className="flex-1 h-full w-full relative overflow-hidden">
       <div className="flex-1 bg-bg-base flex flex-col p-6 h-full overflow-hidden">
         <div className="flex justify-between items-center mb-4 shrink-0 flex-wrap gap-3">
-          <h1 className="text-xl font-medium text-text-main">Items Management</h1>
+          <h1 className="text-xl font-medium text-text-main">アイテム管理</h1>
           <div className="flex gap-3">
             <button
               onClick={() => setComposeOpen(true)}
@@ -107,7 +119,7 @@ export default function ItemsManager() {
             onChange={(e) => setPoolFilter(e.target.value)}
             className="bg-bg-panel border border-border-dark rounded px-3 py-1.5 text-sm focus:outline-none focus:border-accent"
           >
-            <option value="">All Pools</option>
+            <option value="">すべてのカテゴリー</option>
             {pools.map((p) => (
               <option key={p.key} value={p.key}>
                 {p.display_name}
@@ -119,9 +131,9 @@ export default function ItemsManager() {
             onChange={(e) => setTypeFilter(e.target.value as ItemType | '')}
             className="bg-bg-panel border border-border-dark rounded px-3 py-1.5 text-sm focus:outline-none focus:border-accent"
           >
-            <option value="">All Types</option>
-            <option value="finished">Finished</option>
-            <option value="part">Part</option>
+            <option value="">すべての種類</option>
+            <option value="part">Part（素材）</option>
+            <option value="finished">Finished（完成品）</option>
           </select>
           {poolFilter && (
             <select
@@ -129,7 +141,7 @@ export default function ItemsManager() {
               onChange={(e) => setGroupFilter(e.target.value ? Number(e.target.value) : '')}
               className="bg-bg-panel border border-border-dark rounded px-3 py-1.5 text-sm focus:outline-none focus:border-accent"
             >
-              <option value="">All Groups</option>
+              <option value="">すべてのグループ</option>
               {groups.map((g) => (
                 <option key={g.id} value={g.id}>
                   {g.name}
@@ -148,7 +160,7 @@ export default function ItemsManager() {
                 onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
                 className="bg-transparent text-xs font-medium focus:outline-none cursor-pointer -ml-1"
               >
-                <option value="name">Name</option>
+                <option value="name">名前</option>
                 <option value="created">追加順</option>
                 <option value="updated">更新順</option>
                 <option value="used">使用順</option>
@@ -157,10 +169,10 @@ export default function ItemsManager() {
                 <span className="text-[10px]">{sortAsc ? '▲' : '▼'}</span>
               </button>
             </div>
-            <div className="col-span-2">Pool</div>
-            <div className="col-span-2">Type</div>
-            <div className="col-span-4">Prompt Preview</div>
-            <div className="col-span-1 text-right">Edit</div>
+            <div className="col-span-2">カテゴリー</div>
+            <div className="col-span-2">種類</div>
+            <div className="col-span-4">プロンプトプレビュー</div>
+            <div className="col-span-1 text-right">編集</div>
           </div>
           <div className="flex-1 overflow-y-auto">
             {items.map((item) => (
@@ -183,6 +195,7 @@ export default function ItemsManager() {
                   <span className="font-medium truncate" title={item.name}>
                     {item.name}
                   </span>
+                  <button onClick={(e) => { e.stopPropagation(); toggleFavorite(item.id) }} title={favoriteIds.includes(item.id) ? 'お気に入りから外す' : 'お気に入りに追加'} className={favoriteIds.includes(item.id) ? 'text-yellow-400' : 'text-text-sub hover:text-yellow-400'}>{favoriteIds.includes(item.id) ? '★' : '☆'}</button>
                 </div>
                 <div className="col-span-2 text-xs text-text-sub truncate">{poolLabel(item.pool)}</div>
                 <div className="col-span-2">

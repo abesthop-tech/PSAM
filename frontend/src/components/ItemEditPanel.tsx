@@ -364,7 +364,7 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
             </div>
 
             <div>
-              <label className="block text-xs text-text-sub mb-1">Positive Prompt</label>
+              <label className="block text-xs text-text-sub mb-1">Positiveプロンプト</label>
               <textarea
                 value={draft.positive}
                 onChange={(e) => update('positive', e.target.value)}
@@ -372,7 +372,7 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
               />
             </div>
             <div>
-              <label className="block text-xs text-text-sub mb-1">Negative Prompt</label>
+              <label className="block text-xs text-text-sub mb-1">Negativeプロンプト</label>
               <textarea
                 value={draft.negative}
                 onChange={(e) => update('negative', e.target.value)}
@@ -487,7 +487,7 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
 
         {tab === 'groups' && (
           <div className="flex-1 p-5 overflow-y-auto">
-            {isNew && <div className="text-[11px] text-text-sub mb-3">※ Save Changesを押すと確定します</div>}
+            {isNew && <div className="text-[11px] text-text-sub mb-3">※ 保存ボタンを押すと確定します</div>}
             <div className="text-sm text-text-sub mb-3">所属しているグループ</div>
             <div className="flex flex-wrap gap-2 mb-4">
               {(isNew ? pendingGroupIds : groupIds).map((gid) => {
@@ -527,7 +527,7 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
 
         {tab === 'links' && (
           <div className="flex-1 p-5 overflow-y-auto">
-            {isNew && <div className="text-[11px] text-text-sub mb-3">※ Save Changesを押すと確定します</div>}
+            {isNew && <div className="text-[11px] text-text-sub mb-3">※ 保存ボタンを押すと確定します</div>}
             <div className="flex justify-between items-center mb-4">
               <span className="text-sm text-text-sub">関連付けられたアイテム</span>
               <button onClick={() => setLinkPickerOpen(true)} className="px-3 py-1.5 bg-bg-base border border-border-dark hover:border-accent hover:text-accent rounded text-xs transition-colors flex items-center gap-1">
@@ -558,7 +558,7 @@ export default function ItemEditPanel({ itemId, initialPool, pools, onClose, onS
         <div className="p-4 border-t border-border-dark bg-bg-panel flex justify-end items-center gap-3 shrink-0">
           {savedMessage && <span className="text-xs text-accent mr-auto">保存しました</span>}
           <button onClick={handleClose} className="px-4 py-2 rounded text-sm text-text-main bg-bg-card border border-border-dark hover:bg-[#333] transition-colors">
-            Discard
+            閉じる
           </button>
           <button
             onClick={handleSave}

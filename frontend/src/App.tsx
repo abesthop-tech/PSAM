@@ -9,11 +9,11 @@ import QuickBuild from './screens/QuickBuild'
 import ShortcutSettingsModal from './components/ShortcutSettingsModal'
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Build', icon: IconWand, end: true },
-  { to: '/quick-build', label: 'Quick', icon: IconSparkles, end: false },
-  { to: '/groups', label: 'Groups', icon: IconLayers, end: false },
-  { to: '/items', label: 'Items', icon: IconShapes, end: false },
-  { to: '/database', label: 'Database', icon: IconDatabase, end: false },
+  { to: '/', label: '作成', icon: IconWand, end: true },
+  { to: '/quick-build', label: 'クイック', icon: IconSparkles, end: false },
+  { to: '/groups', label: 'グループ', icon: IconLayers, end: false },
+  { to: '/items', label: 'アイテム', icon: IconShapes, end: false },
+  { to: '/database', label: 'DB', icon: IconDatabase, end: false },
 ]
 
 function App() {

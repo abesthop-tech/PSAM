@@ -99,7 +99,7 @@ export default function ComposeFinishedDialog({ parts, pools, onClose, onCreated
           </div>
 
           <div>
-            <label className="block text-xs text-text-sub mb-1">Negative Prompt (任意)</label>
+            <label className="block text-xs text-text-sub mb-1">Negativeプロンプト（任意）</label>
             <textarea value={negative} onChange={(e) => setNegative(e.target.value)} className="w-full h-14 bg-bg-base border border-border-dark rounded p-2 text-sm focus:outline-none focus:border-accent resize-none" />
           </div>
           <div>

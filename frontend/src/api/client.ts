@@ -1,4 +1,4 @@
-import type { DbTablePage, Group, Item, ItemDetail, ItemType, Pool, Variant } from '../types'
+import type { DbTablePage, Group, Item, ItemDetail, ItemType, Pool, PromptSet, PromptSetEntry, Variant } from '../types'
 
 const BASE = '/api'
 
@@ -68,6 +68,9 @@ export const api = {
     request<ItemDetail>(`/items/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteItem: (id: number) => request(`/items/${id}`, { method: 'DELETE' }),
   touchItem: (id: number) => request<ItemDetail>(`/items/${id}/touch`, { method: 'POST' }),
+  listFavoriteIds: () => request<number[]>('/favorites'),
+  addFavorite: (id: number) => request(`/favorites/${id}`, { method: 'PUT' }),
+  removeFavorite: (id: number) => request(`/favorites/${id}`, { method: 'DELETE' }),
   uploadItemImage: async (id: number, file: File) => {
     const form = new FormData()
     form.append('file', file)
@@ -105,6 +108,12 @@ export const api = {
   composeFinished: (data: { pool: string; name: string; part_item_ids: number[]; separator?: string; negative?: string; memo?: string; group_ids?: number[] }) =>
     request<ItemDetail>('/items/compose-finished', { method: 'POST', body: JSON.stringify(data) }),
   getSourceParts: (itemId: number) => request<Item[]>(`/items/${itemId}/source-parts`),
+
+  // ---------- prompt sets ----------
+  listPromptSets: () => request<PromptSet[]>('/prompt-sets'),
+  savePromptSet: (data: { name: string; memo?: string; positive: string; negative: string; entries: PromptSetEntry[] }) =>
+    request<PromptSet>('/prompt-sets', { method: 'POST', body: JSON.stringify(data) }),
+  deletePromptSet: (id: number) => request(`/prompt-sets/${id}`, { method: 'DELETE' }),
 
   // ---------- groups ----------
   listGroups: (params: { pool?: string; search?: string }) => request<Group[]>(`/groups${qs(params)}`),

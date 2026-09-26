@@ -132,3 +132,24 @@ class PoolConfig(Base):
     pool: Mapped[str] = mapped_column(String, ForeignKey("pools.key"), nullable=False)
     key: Mapped[str] = mapped_column(String, nullable=False)
     value: Mapped[str] = mapped_column(Text, default="")
+
+
+class FavoriteItem(Base):
+    __tablename__ = "favorite_items"
+
+    item_id: Mapped[int] = mapped_column(
+        ForeignKey("items.id", ondelete="CASCADE"), primary_key=True
+    )
+
+
+class PromptSet(Base):
+    __tablename__ = "prompt_sets"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    memo: Mapped[str | None] = mapped_column(Text, nullable=True)
+    positive: Mapped[str] = mapped_column(Text, default="")
+    negative: Mapped[str] = mapped_column(Text, default="")
+    entries_json: Mapped[str] = mapped_column(Text, default="[]")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)

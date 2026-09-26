@@ -134,3 +134,18 @@ class PoolConfigOut(BaseModel):
     pool: str
     key: str
     value: str
+
+
+# ---------- prompt sets ----------
+class PromptSetCreate(BaseModel):
+    name: str
+    memo: str | None = None
+    positive: str = ""
+    negative: str = ""
+    entries: list[dict] = []
+
+
+class PromptSetOut(PromptSetCreate):
+    id: int
+    created_at: datetime
+    updated_at: datetime

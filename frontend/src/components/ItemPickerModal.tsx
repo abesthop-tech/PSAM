@@ -80,7 +80,7 @@ export default function ItemPickerModal({
               onChange={(e) => setPoolFilter(e.target.value)}
               className="bg-bg-card border border-border-dark text-sm rounded px-3 py-2 focus:outline-none focus:border-accent"
             >
-              <option value="">All Pools</option>
+              <option value="">すべてのカテゴリー</option>
               {pools.map((p) => (
                 <option key={p.key} value={p.key}>
                   {p.display_name}

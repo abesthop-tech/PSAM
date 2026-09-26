@@ -39,7 +39,7 @@ export default function DatabaseViewer() {
   return (
     <div className="flex-1 h-full w-full flex flex-col p-6 overflow-hidden">
       <div className="flex justify-between items-center mb-6 shrink-0 flex-wrap gap-3">
-        <h1 className="text-xl font-medium text-text-main">Database Viewer</h1>
+        <h1 className="text-xl font-medium text-text-main">データベース閲覧</h1>
         <div className="flex gap-3">
           <div className="relative">
             <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-sub" width={13} height={13} />

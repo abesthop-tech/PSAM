@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from . import models
 from .database import Base, engine
-from .routers import db_viewer, export, groups, items, pools
+from .routers import db_viewer, export, groups, items, pools, workspace
 
 Base.metadata.create_all(bind=engine)
 
@@ -30,6 +30,7 @@ app.include_router(items.router)
 app.include_router(groups.router)
 app.include_router(db_viewer.router)
 app.include_router(export.router)
+app.include_router(workspace.router)
 
 
 @app.get("/api/health")
